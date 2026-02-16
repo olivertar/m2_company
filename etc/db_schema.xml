@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    
+    <!-- Company Flat Table -->
+    <table name="mycompany" resource="default" engine="innodb" comment="Company Flat Table">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
+        <column xsi:type="varchar" name="name" length="255" nullable="false" comment="Company Name"/>
+        <column xsi:type="varchar" name="name_legal" length="255" nullable="true" comment="Company Legal Name"/>
+        <column xsi:type="varchar" name="email" length="255" nullable="false" comment="Company Email"/>
+        <column xsi:type="varchar" name="tax_id" length="50" nullable="true" comment="Tax/VAT ID"/>
+        <column xsi:type="varchar" name="address" length="255" nullable="true" comment="Street Address"/>
+        <column xsi:type="varchar" name="city" length="100" nullable="true" comment="City"/>
+        <column xsi:type="varchar" name="country" length="2" nullable="true" comment="Country Code"/>
+        <column xsi:type="varchar" name="region" length="255" nullable="true" comment="State/Province"/>
+        <column xsi:type="varchar" name="postalcode" length="20" nullable="true" comment="ZIP/Postal Code"/>
+        <column xsi:type="varchar" name="telephone" length="50" nullable="true" comment="Phone Number"/>
+        <column xsi:type="smallint" name="status" padding="5" unsigned="true" nullable="false" default="0" comment="Status"/>
+        <column xsi:type="smallint" name="website_id" padding="5" unsigned="true" nullable="false" default="0" comment="Website ID"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated At"/>
+        
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MYCOMPANY_WEBSITE_ID_STORE_WEBSITE_WEBSITE_ID" table="mycompany" column="website_id" referenceTable="store_website" referenceColumn="website_id" onDelete="CASCADE"/>
+    </table>
+
+    <!-- Roles Table -->
+    <table name="mycompany_role" resource="default" engine="innodb" comment="Company Roles">
+        <column xsi:type="int" name="role_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Role ID"/>
+        <column xsi:type="varchar" name="role_name" length="100" nullable="false" comment="Role Name"/>
+        <column xsi:type="text" name="permissions" nullable="true" comment="Permissions JSON"/>
+        
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="role_id"/>
+        </constraint>
+    </table>
+
+    <!-- Company - Customer Link Table -->
+    <table name="mycompany_customer" resource="default" engine="innodb" comment="Company Customer Link">
+        <column xsi:type="int" name="link_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Link ID"/>
+        <column xsi:type="int" name="company_id" padding="10" unsigned="true" nullable="false" comment="Company ID"/>
+        <column xsi:type="int" name="customer_id" padding="10" unsigned="true" nullable="false" comment="Customer ID"/>
+        <column xsi:type="int" name="role_id" padding="10" unsigned="true" nullable="false" comment="Role ID"/>
+        
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="link_id"/>
+        </constraint>
+        
+        <constraint xsi:type="foreign" referenceId="MYCOMPANY_CUST_COMPANY_ID_MYCOMPANY_ENTITY_ID" table="mycompany_customer" column="company_id" referenceTable="mycompany" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="MYCOMPANY_CUST_CUSTOMER_ID_CUSTOMER_ENTITY_ENTITY_ID" table="mycompany_customer" column="customer_id" referenceTable="customer_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="MYCOMPANY_CUST_ROLE_ID_MYCOMPANY_ROLE_ROLE_ID" table="mycompany_customer" column="role_id" referenceTable="mycompany_role" referenceColumn="role_id" onDelete="CASCADE"/>
+        
+        <!-- Ensure a customer belongs to only one company? Or multiple? Usually B2B is one. Let's assume one for now to keep it simple, or create a unique index on customer_id if 1:1. 
+             User said "company-user-rol quiero que se preserven en una tabla", implied relationship. 
+             If we want strict 1 company per user, we add Unique on customer_id. 
+             However, usually logic enforces this. Let's add Unique on (company_id, customer_id) to avoid duplicates at least. -->
+        <constraint xsi:type="unique" referenceId="MYCOMPANY_CUSTOMER_UNIQUE_PAIR">
+            <column name="company_id"/>
+            <column name="customer_id"/>
+        </constraint>
+    </table>
+
+</schema>

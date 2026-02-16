@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">mycompany_company_form.company_form_data_source</item>
+            <item name="namespace" xsi:type="string">mycompany_company_form</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Company Information</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="save" class="Orangecat\Company\Block\Adminhtml\Company\Edit\SaveButton"/>
+            <button name="back" class="Orangecat\Company\Block\Adminhtml\Company\Edit\BackButton"/>
+        </buttons>
+        <namespace>mycompany_company_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>mycompany_company_form.company_form_data_source</dep>
+        </deps>
+        <layout>
+            <navContainerName>left</navContainerName>
+            <type>tabs</type>
+        </layout>
+    </settings>
+    <dataSource name="company_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="mycompany/company/save"/>
+        </settings>
+        <dataProvider class="Orangecat\Company\Ui\Component\Form\Company\DataProvider" name="company_form_data_source">
+            <settings>
+                <requestFieldName>entity_id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <fieldset name="general">
+        <settings>
+            <label translate="true">General</label>
+        </settings>
+        <field name="entity_id" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+                <dataScope>entity_id</dataScope>
+            </settings>
+        </field>
+        <field name="name" formElement="input">
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Company Name</label>
+                <dataScope>name</dataScope>
+            </settings>
+        </field>
+
+        <field name="name_legal" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Legal Name</label>
+                <dataScope>name_legal</dataScope>
+            </settings>
+        </field>
+        <field name="email" formElement="input">
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="validate-email" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Company Email</label>
+                <dataScope>email</dataScope>
+            </settings>
+        </field>
+        <field name="tax_id" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">VAT/Tax ID</label>
+                <dataScope>tax_id</dataScope>
+            </settings>
+        </field>
+
+        <field name="status" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Status</label>
+                <dataScope>status</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Orangecat\Company\Model\Config\Source\Status"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- Tab 2: Address Information -->
+    <fieldset name="address">
+        <settings>
+            <label translate="true">Address Information</label>
+        </settings>
+        <field name="address" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Street Address</label>
+                <dataScope>address</dataScope>
+            </settings>
+        </field>
+        <field name="city" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">City</label>
+                <dataScope>city</dataScope>
+            </settings>
+        </field>
+        <field name="country" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Country</label>
+                <dataScope>country</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Directory\Model\Config\Source\Country"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="region" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">State/Province</label>
+                <dataScope>region</dataScope>
+            </settings>
+        </field>
+        <field name="postalcode" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Zip/Postal Code</label>
+                <dataScope>postalcode</dataScope>
+            </settings>
+        </field>
+        <field name="telephone" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Phone Number</label>
+                <dataScope>telephone</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- Tab 3: Company Administrator (Custom Component Class) -->
+    <fieldset name="company_admin" class="Orangecat\Company\Ui\Component\Form\Fieldset\CompanyAdminFieldset">
+        <settings>
+            <label translate="true">Company Administrator</label>
+            <collapsible>false</collapsible>
+            <opened>true</opened>
+        </settings>
+
+        <!-- Scenario A: New Company (Create New Admin) -->
+        <fieldset name="new_admin_fieldset">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="label" xsi:type="string" translate="true">Create Initial Administrator</item>
+                    <item name="collapsible" xsi:type="boolean">false</item>
+                    <item name="opened" xsi:type="boolean">true</item>
+                </item>
+            </argument>
+            <field name="admin_firstname" formElement="input" sortOrder="10">
+                <settings>
+                    <validation>
+                        <rule name="required-entry" xsi:type="boolean">true</rule>
+                    </validation>
+                    <dataType>text</dataType>
+                    <label translate="true">Admin First Name</label>
+                    <dataScope>admin_firstname</dataScope>
+                </settings>
+            </field>
+            <field name="admin_lastname" formElement="input" sortOrder="20">
+                <settings>
+                    <validation>
+                        <rule name="required-entry" xsi:type="boolean">true</rule>
+                    </validation>
+                    <dataType>text</dataType>
+                    <label translate="true">Admin Last Name</label>
+                    <dataScope>admin_lastname</dataScope>
+                </settings>
+            </field>
+            <field name="admin_email" formElement="input" sortOrder="30">
+                <settings>
+                    <validation>
+                        <rule name="required-entry" xsi:type="boolean">true</rule>
+                        <rule name="validate-email" xsi:type="boolean">true</rule>
+                    </validation>
+                    <dataType>text</dataType>
+                    <label translate="true">Admin Email</label>
+                    <dataScope>admin_email</dataScope>
+                </settings>
+            </field>
+            <field name="admin_website_id" formElement="select" sortOrder="40">
+                <settings>
+                    <validation>
+                        <rule name="required-entry" xsi:type="boolean">true</rule>
+                    </validation>
+                    <dataType>text</dataType>
+                    <label translate="true">Associate to Website</label>
+                    <dataScope>admin_website_id</dataScope>
+                </settings>
+                <formElements>
+                    <select>
+                        <settings>
+                            <options class="Magento\Config\Model\Config\Source\Website"/>
+                        </settings>
+                    </select>
+                </formElements>
+            </field>
+        </fieldset>
+
+       <!-- Scenario B: Edit Company (Select Existing Admin via Grid) -->
+        <container name="company_customer_listing">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="visible" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">Current Administrator</item>
+                </item>
+            </argument>
+             <htmlContent name="admin_grid_block">
+                <block class="Orangecat\Company\Block\Adminhtml\Company\Edit\Tab\CustomerGrid" name="company_admin_grid"/>
+            </htmlContent>
+        </container>
+    </fieldset>
+
+</form>

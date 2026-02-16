@@ -1,0 +1,69 @@
+<!--@subject New Company Registration: {{var company.name}} @-->
+<!--@vars {
+"var company.name":"Company Name",
+"var company.email":"Company Email",
+"var company.tax_id":"Tax ID",
+"var company.name_legal":"Company Legal Name",
+"var customer.firstname":"Admin First Name",
+"var customer.lastname":"Admin Last Name",
+"var customer.email":"Admin Email"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<p class="greeting">{{trans "Hello Administrator,"}}</p>
+<p>
+    {{trans "A new company has requested registration:"}}
+</p>
+
+<table class="email-items">
+    <thead>
+        <tr>
+            <th colspan="2">{{trans "Company Details"}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>{{trans "Company Name"}}</strong></td>
+            <td>{{var company.name}}</td>
+        </tr>
+        <tr>
+            <td><strong>{{trans "Company Email"}}</strong></td>
+            <td><a href="mailto:{{var company.email}}">{{var company.email}}</a></td>
+        </tr>
+        <tr>
+            <td><strong>{{trans "Tax ID"}}</strong></td>
+            <td>{{var company.tax_id}}</td>
+        </tr>
+        <tr>
+            <td><strong>{{trans "Legal Name"}}</strong></td>
+            <td>{{var company.name_legal}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<br>
+
+<table class="email-items">
+    <thead>
+        <tr>
+            <th colspan="2">{{trans "Administrator Details"}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>{{trans "Name"}}</strong></td>
+            <td>{{var customer.firstname}} {{var customer.lastname}}</td>
+        </tr>
+        <tr>
+            <td><strong>{{trans "Email"}}</strong></td>
+            <td><a href="mailto:{{var customer.email}}">{{var customer.email}}</a></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>
+    {{trans "Please review this request in the admin panel."}}
+</p>
+
+{{template config_path="design/email/footer_template"}}

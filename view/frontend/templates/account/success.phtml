@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * This file is part of the Orangecat Company package.
+ *
+ * (c) Oliverio Gombert <olivertar@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/** @var \Magento\Framework\View\Element\Template $block */
+?>
+<div class="company-registration-success">
+    <p>
+        <?= $escaper->escapeHtml(__('Thank you for your company registration request.')) ?>
+        <?= $escaper->escapeHtml(__('We have received your application and it is currently under review.')) ?>
+    </p>
+    <p>
+        <?= $escaper->escapeHtml(__('You will receive an email notification once your request has been processed.')) ?>
+    </p>
+    <div class="actions-toolbar">
+        <div class="primary">
+            <a class="action primary" href="<?= $escaper->escapeUrl($block->getUrl('')) ?>">
+                <span><?= $escaper->escapeHtml(__('Continue Shopping')) ?></span>
+            </a>
+        </div>
+    </div>
+</div>

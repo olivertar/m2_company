@@ -1,0 +1,46 @@
+<!--
+/**
+ * This file is part of the Orangecat Company package.
+ *
+ * (c) Oliverio Gombert <olivertar@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+-->
+<!--@subject {{trans "Welcome to %company_name" company_name=$company_name}} @-->
+<!--@vars {
+"var store.frontend_name":"Store Name",
+"var company_name":"Company Name",
+"var this.getUrl($store, 'customer/account/')":"Customer Account URL",
+"var this.getUrl($store,'customer/account/createPassword/',[_query:[id:$customer.id,token:$token],_nosid:1])":"Create Password URL",
+"var customer.email":"Customer Email",
+"var customer.firstname":"Customer First Name",
+"var customer.lastname":"Customer Last Name",
+"var customer_firstname":"Customer First Name",
+"var customer_lastname":"Customer Last Name",
+"var reset_password_link":"Reset Password Link"
+} @-->
+{{template config_path="design/email/header_template"}}
+
+<p class="greeting">{{trans "Hello %firstname %lastname," firstname=$customer_firstname lastname=$customer_lastname}}
+</p>
+<p>
+    {{trans "You have been added to the company account <strong>%company_name</strong> at %store_name."
+    company_name=$company_name store_name=$store.frontend_name |raw}}
+</p>
+<p>
+    {{trans "To sign in and set your password, please click the link below:"}}
+</p>
+<p>
+    <a href="{{var reset_password_link}}">{{trans "Set Your Password"}}</a>
+</p>
+<p>
+    {{trans "Or copy and paste this URL into your browser:"}} <br>
+    {{var reset_password_link}}
+</p>
+<p>
+    {{trans "If you have any questions, please contact your company administrator."}}
+</p>
+
+{{template config_path="design/email/footer_template"}}

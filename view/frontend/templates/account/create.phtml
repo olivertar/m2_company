@@ -1,0 +1,205 @@
+<?php
+
+/**
+ * This file is part of the Orangecat Company package.
+ *
+ * (c) Oliverio Gombert <olivertar@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/**
+ * @var \Orangecat\Company\Block\Account\Create $block
+ */
+?>
+<div class="company-account-create">
+    <form class="form create account form-create-company"
+        action="<?= $escaper->escapeUrl($block->getFormAction()) ?>"
+        method="post"
+        id="form-validate"
+        enctype="multipart/form-data">
+
+        <?= $block->getBlockHtml('formkey') ?>
+
+        <?php
+        $formData = $block->getFormData();
+        ?>
+        <fieldset class="fieldset create info"
+            data-hasrequired="<?= $escaper->escapeHtmlAttr(__('* Required Fields')) ?>">
+            <legend class="legend"><span><?= $escaper->escapeHtml(__('Company Information')) ?></span></legend>
+
+            <div class="field company_name required">
+                <label class="label" for="company_name">
+                    <span><?= $escaper->escapeHtml(__('Company Name')) ?></span>
+                </label>
+                <div class="control">
+                    <input type="text" name="company_name" id="company_name" class="input-text"
+                        value="<?= $escaper->escapeHtmlAttr($formData['company_name'] ?? '') ?>"
+                        data-validate="{required:true}" required>
+                </div>
+            </div>
+
+            <div class="field name_legal">
+                <label class="label" for="name_legal">
+                    <span><?= $escaper->escapeHtml(__('Company Legal Name')) ?></span>
+                </label>
+                <div class="control">
+                    <input type="text" name="name_legal" id="name_legal" class="input-text"
+                        value="<?= $escaper->escapeHtmlAttr($formData['name_legal'] ?? '') ?>">
+                </div>
+            </div>
+
+            <div class="field company_email required">
+                <label class="label" for="company_email">
+                    <span><?= $escaper->escapeHtml(__('Company Email')) ?></span>
+                </label>
+                <div class="control">
+                    <input type="email" name="company_email" id="company_email" class="input-text"
+                        value="<?= $escaper->escapeHtmlAttr($formData['company_email'] ?? '') ?>"
+                        data-validate="{required:true, 'validate-email':true}" required>
+                </div>
+            </div>
+
+            <div class="field tax_id">
+                <label class="label" for="tax_id"><span><?= $escaper->escapeHtml(__('Tax ID / VAT')) ?></span></label>
+                <div class="control">
+                    <input type="text" name="tax_id" id="tax_id" class="input-text"
+                        value="<?= $escaper->escapeHtmlAttr($formData['tax_id'] ?? '') ?>">
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset class="fieldset address">
+            <legend class="legend"><span><?= $escaper->escapeHtml(__('Company Address')) ?></span></legend>
+
+            <div class="field street">
+                <label class="label" for="street"><span><?= $escaper->escapeHtml(__('Street Address')) ?></span></label>
+                <div class="control">
+                    <input type="text" name="street" id="street" class="input-text"
+                        value="<?= $escaper->escapeHtmlAttr($formData['street'] ?? '') ?>">
+                </div>
+            </div>
+
+            <div class="field city">
+                <label class="label" for="city"><span><?= $escaper->escapeHtml(__('City')) ?></span></label>
+                <div class="control">
+                    <input type="text" name="city" id="city" class="input-text"
+                        value="<?= $escaper->escapeHtmlAttr($formData['city'] ?? '') ?>">
+                </div>
+            </div>
+
+            <div class="field country">
+                <label class="label" for="country"><span><?= $escaper->escapeHtml(__('Country')) ?></span></label>
+                <div class="control">
+                    <select name="country" id="country" class="select">
+                        <option value=""><?= $escaper->escapeHtml(__('Please select')) ?></option>
+                        <?php foreach ($block->getCountryOptions() as $option): ?>
+                            <option value="<?= $escaper->escapeHtmlAttr($option['value']) ?>"
+                                <?= (isset($formData['country']) &&
+                                    $formData['country'] == $option['value']) ? 'selected' : '' ?>>
+                                <?= $escaper->escapeHtml($option['label']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field region">
+                <label class="label" for="region"><span><?= $escaper->escapeHtml(__('State/Province')) ?></span></label>
+                <div class="control">
+                    <input type="text" name="region" id="region" class="input-text"
+                        value="<?= $escaper->escapeHtmlAttr($formData['region'] ?? '') ?>">
+                </div>
+            </div>
+
+            <div class="field postcode">
+                <label class="label" for="postcode">
+                    <span><?= $escaper->escapeHtml(__('ZIP/Postal Code')) ?></span>
+                </label>
+                <div class="control">
+                    <input type="text" name="postcode" id="postcode" class="input-text"
+                        value="<?= $escaper->escapeHtmlAttr($formData['postcode'] ?? '') ?>">
+                </div>
+            </div>
+
+            <div class="field telephone">
+                <label class="label" for="telephone">
+                    <span><?= $escaper->escapeHtml(__('Phone Number')) ?></span>
+                </label>
+                <div class="control">
+                    <input type="tel" name="telephone" id="telephone" class="input-text"
+                        value="<?= $escaper->escapeHtmlAttr($formData['telephone'] ?? '') ?>">
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset class="fieldset create account"
+            data-hasrequired="<?= $escaper->escapeHtmlAttr(__('* Required Fields')) ?>">
+            <legend class="legend"><span><?= $escaper->escapeHtml(__('Company Administrator')) ?></span></legend>
+
+            <div class="field firstname required">
+                <label class="label" for="firstname"><span><?= $escaper->escapeHtml(__('First Name')) ?></span></label>
+                <div class="control">
+                    <input type="text" name="firstname" id="firstname" class="input-text"
+                        value="<?= $escaper->escapeHtmlAttr($formData['firstname'] ?? '') ?>"
+                        data-validate="{required:true}" required>
+                </div>
+            </div>
+
+            <div class="field lastname required">
+                <label class="label" for="lastname"><span><?= $escaper->escapeHtml(__('Last Name')) ?></span></label>
+                <div class="control">
+                    <input type="text" name="lastname" id="lastname" class="input-text"
+                        value="<?= $escaper->escapeHtmlAttr($formData['lastname'] ?? '') ?>"
+                        data-validate="{required:true}" required>
+                </div>
+            </div>
+
+            <div class="field admin_email required">
+                <label class="label" for="admin_email"><span><?= $escaper->escapeHtml(__('Email')) ?></span></label>
+                <div class="control">
+                    <input type="email" name="admin_email" id="admin_email" class="input-text"
+                        value="<?= $escaper->escapeHtmlAttr($formData['admin_email'] ?? '') ?>"
+                        data-validate="{required:true, 'validate-email':true}" required>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset class="fieldset terms" data-hasrequired="<?= $escaper->escapeHtmlAttr(__('* Required Fields')) ?>">
+            <div class="field choice required">
+                <input type="checkbox"
+                    name="agreement"
+                    id="agreement"
+                    class="checkbox"
+                    data-validate="{required:true}"
+                    required>
+                <label class="label" for="agreement">
+                    <span>
+                        <?= $escaper->escapeHtml(__('By checking this box, you accept our')) ?>
+                        <a href="<?= $escaper->escapeUrl($block->getUrl('company-terms')) ?>" target="_blank">
+                            <?= $escaper->escapeHtml(__('terms and conditions')) ?>
+                        </a>
+                    </span>
+                </label>
+            </div>
+        </fieldset>
+
+        <div class="actions-toolbar">
+            <div class="primary">
+                <button type="submit" class="action submit primary"
+                    title="<?= $escaper->escapeHtmlAttr(__('Submit Request')) ?>">
+                    <span><?= $escaper->escapeHtml(__('Submit Request')) ?></span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/x-magento-init">
+    {
+    "#form-validate": {
+        "validation": {}
+    }
+}
+</script>

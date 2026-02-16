@@ -1,0 +1,25 @@
+<!--
+/**
+ * Check if the company status has changed
+ */
+-->
+<!--@subject Company Status Update @-->
+<!--@vars {
+"var company.name":"Company Name",
+"var status_label":"New Status Label",
+"var store.getFrontendName()":"Store Name",
+"var store_email":"Store Email"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<p class="greeting">{{trans "Hello %company_name," company_name=$company.name}}</p>
+<p>
+    {{trans "The status of your company account has been updated to: <strong>%status_label</strong>."
+    status_label=$status_label |raw}}
+</p>
+<p>
+    {{trans "If you have any questions, please contact us at %store_email." store_email=$store_email}}
+</p>
+
+{{template config_path="design/email/footer_template"}}

@@ -1,0 +1,137 @@
+<?php
+
+/**
+ * @var \Orangecat\Company\Block\Users\Edit $block
+ */
+$user = $block->getUser();
+$userLink = $block->getUserLink();
+$isEdit = $user && $user->getId();
+?>
+<form class="form form-company-user-edit"
+    action="<?= $escaper->escapeUrl($block->getSaveUrl()) ?>"
+    method="post"
+    id="form-validate"
+    enctype="multipart/form-data"
+    data-hasrequired="<?= $escaper->escapeHtmlAttr(__('* Required Fields')) ?>"
+    autocomplete="off">
+    <fieldset class="fieldset info">
+        <?= $block->getBlockHtml('formkey') ?>
+        <legend class="legend"><span><?= $escaper->escapeHtml(__('User Information')) ?></span></legend><br>
+
+        <?php if ($isEdit): ?>
+            <input type="hidden" name="link_id" value="<?= $escaper->escapeHtmlAttr($userLink->getId()) ?>" />
+        <?php endif; ?>
+
+        <div class="field firstname required">
+            <label class="label" for="firstname"><span><?= $escaper->escapeHtml(__('First Name')) ?></span></label>
+            <div class="control">
+                <input type="text"
+                    id="firstname"
+                    name="firstname"
+                    value="<?= $isEdit ? $escaper->escapeHtmlAttr($user->getFirstname()) : '' ?>"
+                    title="<?= $escaper->escapeHtmlAttr(__('First Name')) ?>"
+                    class="input-text required-entry"
+                    data-validate="{required:true}">
+            </div>
+        </div>
+        <div class="field lastname required">
+            <label class="label" for="lastname"><span><?= $escaper->escapeHtml(__('Last Name')) ?></span></label>
+            <div class="control">
+                <input type="text"
+                    id="lastname"
+                    name="lastname"
+                    value="<?= $isEdit ? $escaper->escapeHtmlAttr($user->getLastname()) : '' ?>"
+                    title="<?= $escaper->escapeHtmlAttr(__('Last Name')) ?>"
+                    class="input-text required-entry"
+                    data-validate="{required:true}">
+            </div>
+        </div>
+        <div class="field email required">
+            <label class="label" for="email"><span><?= $escaper->escapeHtml(__('Email')) ?></span></label>
+            <div class="control">
+                <input type="email"
+                    id="email"
+                    name="email"
+                    value="<?= $isEdit ? $escaper->escapeHtmlAttr($user->getEmail()) : '' ?>"
+                    title="<?= $escaper->escapeHtmlAttr(__('Email')) ?>"
+                    class="input-text"
+                    data-validate="{required:true, 'validate-email':true}"
+                    <?= $isEdit ? 'readonly' : '' ?>>
+            </div>
+        </div>
+
+        <div class="field role required">
+            <label class="label" for="role_id"><span><?= $escaper->escapeHtml(__('Role')) ?></span></label>
+            <div class="control">
+                <select id="role_id"
+                    name="role_id"
+                    title="<?= $escaper->escapeHtmlAttr(__('Role')) ?>"
+                    class="validate-select">
+                    <?php foreach ($block->getRoles() as $role): ?>
+                        <option value="<?= $escaper->escapeHtmlAttr($role->getId()) ?>"
+                            <?= ($isEdit && $userLink->getRoleId() == $role->getId()) ? 'selected="selected"' : '' ?>>
+                            <?= $escaper->escapeHtml($role->getRoleName()) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+
+        <!-- Status Field -->
+        <!-- We map this to customer attribute approve_account -->
+
+        <div class="field status required">
+            <label class="label" for="status"><span><?= $escaper->escapeHtml(__('Status')) ?></span></label>
+            <div class="control">
+                <select id="status"
+                    name="status"
+                    title="<?= $escaper->escapeHtmlAttr(__('Status')) ?>"
+                    class="validate-select">
+                    <option value="1" <?= ($block->getUserStatus() == 1) ? 'selected="selected"' : '' ?>>
+                        <?= $escaper->escapeHtml(__('Enabled')) ?>
+                    </option>
+                    <option value="0" <?= ($block->getUserStatus() == 0) ? 'selected="selected"' : '' ?>>
+                        <?= $escaper->escapeHtml(__('Disabled')) ?>
+                    </option>
+                </select>
+            </div>
+        </div>
+    </fieldset>
+    <div class="actions-toolbar">
+        <div class="primary">
+            <button type="submit"
+                class="action save primary"
+                title="<?= $escaper->escapeHtmlAttr(__('Save User')) ?>">
+                <span><?= $escaper->escapeHtmlAttr(__('Save User')) ?></span>
+            </button>
+        </div>
+        <div class="secondary">
+            <?php if ($isEdit): ?>
+                <?php $deletePostData = $block->getDeletePostData(); ?>
+                <a class="action delete"
+                    href="#"
+                    data-post='<?= /* @noEscape */ $deletePostData ?>'>
+                    <span><?= $escaper->escapeHtml(__('Delete User')) ?></span>
+                </a>
+            <?php endif; ?>
+            <a class="action back"
+                href="<?= $escaper->escapeUrl($block->getBackUrl()) ?>">
+                <span><?= $escaper->escapeHtml(__('Back')) ?></span>
+            </a>
+        </div>
+    </div>
+</form>
+<script>
+    function deleteUser() {
+        if (confirm('<?= $escaper->escapeJs(__('Are you sure you want to delete this user?')) ?>')) {
+            window.location.href = '<?= $escaper->escapeUrl($block->getDeleteUrl()) ?>';
+        }
+    }
+    require([
+        "jquery",
+        "mage/mage"
+    ], function($) {
+        var dataForm = $('#form-validate');
+        dataForm.mage('validation', {});
+    });
+</script>

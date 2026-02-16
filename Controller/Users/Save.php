@@ -1,0 +1,252 @@
+<?php
+
+/**
+ * This file is part of the Orangecat Company package.
+ *
+ * (c) Oliverio Gombert <olivertar@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Orangecat\Company\Controller\Users;
+
+use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Customer\Model\Session;
+use Orangecat\Company\Model\CompanyManagement;
+use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\App\RequestInterface;
+use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Api\AccountManagementInterface;
+use Magento\Framework\Message\ManagerInterface;
+use Orangecat\Company\Model\CompanyRepository;
+use Magento\Framework\Math\Random;
+use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Framework\Translate\Inline\StateInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+
+class Save implements HttpPostActionInterface
+{
+    /**
+     * @param Session $customerSession
+     * @param CompanyManagement $companyManagement
+     * @param ResultFactory $resultFactory
+     * @param \Magento\Framework\App\Request\Http $request
+     * @param CustomerRepositoryInterface $customerRepository
+     * @param \Magento\Customer\Api\Data\CustomerInterfaceFactory $customerFactory
+     * @param AccountManagementInterface $accountManagement
+     * @param ManagerInterface $messageManager
+     * @param CompanyRepository $companyRepository
+     * @param Random $random
+     * @param TransportBuilder $transportBuilder
+     * @param StateInterface $inlineTranslation
+     * @param StoreManagerInterface $storeManager
+     * @param ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\UrlInterface $urlBuilder
+     * @param \Magento\Customer\Model\CustomerFactory $customerModelFactory
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
+     */
+    public function __construct(
+        private Session $customerSession,
+        private CompanyManagement $companyManagement,
+        private ResultFactory $resultFactory,
+        private \Magento\Framework\App\Request\Http $request,
+        private CustomerRepositoryInterface $customerRepository,
+        private \Magento\Customer\Api\Data\CustomerInterfaceFactory $customerFactory,
+        private AccountManagementInterface $accountManagement,
+        private ManagerInterface $messageManager,
+        private CompanyRepository $companyRepository,
+        private Random $random,
+        private TransportBuilder $transportBuilder,
+        private StateInterface $inlineTranslation,
+        private StoreManagerInterface $storeManager,
+        private ScopeConfigInterface $scopeConfig,
+        private \Magento\Framework\UrlInterface $urlBuilder,
+        private \Magento\Customer\Model\CustomerFactory $customerModelFactory,
+        private \Magento\Framework\Encryption\EncryptorInterface $encryptor
+    ) {
+    }
+
+    /**
+     * Execute action
+     *
+     * @return \Magento\Framework\Controller\ResultInterface
+     */
+    public function execute()
+    {
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        /** @var \Magento\Framework\Controller\Result\Redirect $resultRedirect */
+
+        if (!$this->customerSession->isLoggedIn()) {
+            return $resultRedirect->setPath('customer/account/login');
+        }
+
+        $currentCustomerId = $this->customerSession->getCustomerId();
+
+        if (!$this->companyManagement->isCompanyAdmin($currentCustomerId)) {
+            return $resultRedirect->setPath('customer/account');
+        }
+
+        $currentCompanyId = $this->companyManagement->getCompanyIdByCustomerId($currentCustomerId);
+
+        $data = $this->request->getPostValue();
+        if (!$data) {
+            return $resultRedirect->setPath('*/*/create');
+        }
+
+        try {
+            $linkId = isset($data['link_id']) ? (int)$data['link_id'] : null;
+            $email = $data['email'];
+            $firstname = $data['firstname'];
+            $lastname = $data['lastname'];
+            $roleId = (int)$data['role_id'];
+            $status = isset($data['status']) ? (int)$data['status'] : 1;
+
+            // Role 1 check
+            if ($roleId == 1) {
+                $this->messageManager->addErrorMessage(__('You cannot assign the Company Admin role.'));
+                return $resultRedirect->setPath('*/*/index');
+            }
+
+            if ($linkId) {
+                // EDIT EXISTING
+
+                // Load by email to find the customer.
+                // Ideally we should load by link_id to be safer, but current architecture relies on email uniqueness.
+                $customer = $this->customerRepository->get($email);
+
+                // Security Check: Ensure admin can manage this user
+                try {
+                    $this->companyManagement->validateManageUser($currentCustomerId, (int)$customer->getId());
+                } catch (\Magento\Framework\Exception\LocalizedException $e) {
+                    $this->messageManager->addErrorMessage($e->getMessage());
+                    return $resultRedirect->setPath('*/*/index');
+                }
+
+                if ($customer->getId() == $currentCustomerId) {
+                    $this->messageManager->addErrorMessage(__('You cannot edit your own account permissions.'));
+                    return $resultRedirect->setPath('*/*/index');
+                }
+
+                $customer->setFirstname($firstname);
+                $customer->setLastname($lastname);
+
+                $this->customerRepository->save($customer);
+
+                // Update Status (approve_account)
+                if ($status !== null) {
+                    $customerModel = $this->customerModelFactory->create()->load($customer->getId());
+                    if ($customerModel->getId()) {
+                        $customerModel->setData('approve_account', $status);
+                        $customerModel->save();
+                    }
+                }
+
+                // Update Company Link
+                $this->companyManagement->assignCustomer($currentCompanyId, $customer->getId(), $roleId);
+
+                $this->messageManager->addSuccessMessage(__('The user has been updated.'));
+            } else {
+                // CREATE NEW
+
+                try {
+                    $customer = $this->customerRepository->get($email);
+
+                    // Check if already in a company
+                    $existingCompany = $this->companyManagement->getCompanyIdByCustomerId($customer->getId());
+                    if ($existingCompany) {
+                        $this->messageManager->addErrorMessage(__('This customer is already assigned to a company.'));
+                        return $resultRedirect->setPath('*/*/create');
+                    }
+                } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+                    // Create new customer
+                    $customer = $this->customerFactory->create();
+                    $customer->setFirstname($firstname);
+                    $customer->setLastname($lastname);
+                    $customer->setEmail($email);
+
+                    // Set random password
+                    $password = $this->random->getRandomString(10);
+
+                    // Use Customer Model to save password
+                    $customerModel = $this->customerModelFactory->create();
+                    $customerModel->setData('firstname', $firstname);
+                    $customerModel->setData('lastname', $lastname);
+                    $customerModel->setData('email', $email);
+                    $customerModel->setData('approve_account', $status);
+                    $customerModel->setPassword($password);
+
+                    $customerModel->save();
+                    $customer = $this->customerRepository->get($email); // Reload as Interface
+                }
+
+                $this->companyManagement->assignCustomer($currentCompanyId, $customer->getId(), $roleId);
+
+                // Send Custom Welcome Email
+                $this->sendWelcomeEmail($customer, $currentCompanyId);
+
+                $this->messageManager->addSuccessMessage(__('The user has been created and notified.'));
+            }
+        } catch (\Exception $e) {
+            $this->messageManager->addErrorMessage(__('Error saving user: %1', $e->getMessage()));
+            return $resultRedirect->setPath('*/*/create');
+        }
+
+        return $resultRedirect->setPath('company/users/index');
+    }
+
+    /**
+     * Send welcome email
+     *
+     * @param \Magento\Customer\Api\Data\CustomerInterface $customer
+     * @param int $companyId
+     * @return void
+     */
+    private function sendWelcomeEmail($customer, $companyId): void
+    {
+        try {
+            // Manually generate token to avoid triggering standard email or rate limiter
+            $newPasswordToken = $this->random->getUniqueHash();
+
+            // We need to save the token to the customer
+            // Use simple model load/save to avoid complexity with Repository data interfaces if attributes missing
+            $customerModel = $this->customerModelFactory->create()->load($customer->getId());
+            $customerModel->setRpToken($newPasswordToken);
+            $customerModel->setRpTokenCreatedAt(
+                (new \DateTime())->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT)
+            );
+            $customerModel->save();
+
+            // Now Send Email
+            $company = $this->companyRepository->get($companyId);
+
+            $transport = $this->transportBuilder
+                ->setTemplateIdentifier('company_user_welcome')
+                ->setTemplateOptions([
+                    'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
+                    'store' => $this->storeManager->getStore()->getId()
+                ])
+                ->setTemplateVars([
+                    'customer' => $customer,
+                    'customer_firstname' => $customer->getFirstname(),
+                    'customer_lastname' => $customer->getLastname(),
+                    'company_name' => $company->getName(),
+                    'store' => $this->storeManager->getStore(),
+                    'id' => $customer->getId(),
+                    'token' => $newPasswordToken,
+                    'reset_password_link' => $this->urlBuilder->getUrl(
+                        'customer/account/createPassword',
+                        ['_query' => ['id' => $customer->getId(), 'token' => $newPasswordToken]]
+                    )
+                ])
+                ->setFromByScope('general')
+                ->addTo($customer->getEmail(), $customer->getFirstname() . ' ' . $customer->getLastname())
+                ->getTransport();
+
+            $transport->sendMessage();
+        } catch (\Exception $e) {
+            $this->messageManager->addErrorMessage(__('Error sending email: %1', $e->getMessage()));
+        }
+    }
+}

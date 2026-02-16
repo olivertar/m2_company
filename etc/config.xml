@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <mycompany>
+            <email>
+                <enable_email_notification>0</enable_email_notification>
+                <email_template>mycompany_email_email_template</email_template>
+                <company_no_password_template>mycompany_email_company_no_password_template</company_no_password_template>
+            </email>
+            <customers>
+                <allow_frontend_customer_registration>0</allow_frontend_customer_registration>
+                <require_approval_for_customer>1</require_approval_for_customer>
+            </customers>
+        </mycompany>
+    </default>
+</config>

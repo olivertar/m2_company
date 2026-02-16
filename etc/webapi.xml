@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * This file is part of the Orangecat Company package.
+ *
+ * (c) Oliverio Gombert <olivertar@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <!-- Create Company -->
+    <route url="/V1/mycompany/" method="POST">
+        <service class="Orangecat\Company\Api\CompanyRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Orangecat_Company::company"/>
+        </resources>
+    </route>
+
+    <!-- Update Company -->
+    <route url="/V1/mycompany/:entity_id" method="PUT">
+        <service class="Orangecat\Company\Api\CompanyRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Orangecat_Company::company"/>
+        </resources>
+    </route>
+
+    <!-- Get Company -->
+    <route url="/V1/mycompany/:companyId" method="GET">
+        <service class="Orangecat\Company\Api\CompanyRepositoryInterface" method="get"/>
+        <resources>
+            <resource ref="Orangecat_Company::company"/>
+        </resources>
+    </route>
+
+    <!-- Delete Company -->
+    <route url="/V1/mycompany/:companyId" method="DELETE">
+        <service class="Orangecat\Company\Api\CompanyRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="Orangecat_Company::company"/>
+        </resources>
+    </route>
+
+    <!-- Search Companies -->
+    <route url="/V1/mycompany/" method="GET">
+        <service class="Orangecat\Company\Api\CompanyRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="Orangecat_Company::company"/>
+        </resources>
+    </route>
+</routes>

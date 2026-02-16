@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * This file is part of the Orangecat Company package.
+ *
+ * (c) Oliverio Gombert <olivertar@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Orangecat\Company\Api\CompanyRepositoryInterface" type="Orangecat\Company\Model\CompanyRepository"/>
+    <preference for="Orangecat\Company\Api\Data\CompanyInterface" type="Orangecat\Company\Model\Company"/>
+    <preference for="Orangecat\Company\Api\Data\CompanySearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+    
+    <preference for="Orangecat\Company\Api\RoleRepositoryInterface" type="Orangecat\Company\Model\RoleRepository"/>
+    <preference for="Orangecat\Company\Api\Data\RoleInterface" type="Orangecat\Company\Model\Role"/>
+    <preference for="Orangecat\Company\Api\Data\RoleSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+    
+    <preference for="Orangecat\Company\Api\CompanyManagementInterface" type="Orangecat\Company\Model\CompanyManagement"/>
+    
+    <preference for="Orangecat\Company\Api\Data\CompanyCustomerInterface" type="Orangecat\Company\Model\CompanyCustomer"/>
+    
+    <!-- UI Component Data Provider -->
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="mycompany_company_listing_data_source" xsi:type="string">Orangecat\Company\Model\ResourceModel\Company\Grid\Collection</item>
+                <item name="mycompany_customer_modal_listing_data_source" xsi:type="string">Magento\Customer\Model\ResourceModel\Grid\Collection</item>
+                <item name="mycompany_company_customer_listing_data_source" xsi:type="string">Magento\Customer\Model\ResourceModel\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="Orangecat\Company\Model\ResourceModel\Company\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">mycompany</argument>
+            <argument name="resourceModel" xsi:type="string">Orangecat\Company\Model\ResourceModel\Company</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\Mail\Template\TransportBuilder">
+        <plugin name="mycompany_company_email_template_transport_builder" type="Orangecat\Company\Plugin\Mail\Template\TransportBuilderPlugin" sortOrder="10"/>
+    </type>
+    <type name="Magento\Customer\Api\CustomerRepositoryInterface">
+        <plugin name="mycompany_prevent_company_admin_deletion" type="Orangecat\Company\Plugin\Customer\Api\CustomerRepositoryInterfacePlugin" sortOrder="10"/>
+        <plugin name="mycompany_persist_company_assignment" type="Orangecat\Company\Plugin\Customer\Api\CustomerRepositoryInterfaceSavePlugin" sortOrder="20"/>
+    </type>
+</config>

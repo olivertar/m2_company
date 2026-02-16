@@ -1,0 +1,103 @@
+<?php
+
+/**
+ * @var \Orangecat\Company\Block\Users\ListUsers $block
+ */
+$users = $block->getUsers();
+?>
+<div class="company-users-container">
+    <div class="actions-toolbar">
+        <div class="primary">
+            <a href="<?= $escaper->escapeUrl($block->getCreateUrl()) ?>" class="action primary">
+                <span><?= $escaper->escapeHtml(__('Add New User')) ?></span>
+            </a>
+        </div>
+    </div>
+
+    <div class="table-wrapper orders-history">
+        <table class="data table table-company-users" id="my-orders-table">
+            <caption class="table-caption"><?= $escaper->escapeHtml(__('Company Users')) ?></caption>
+            <thead>
+                <tr>
+                    <th scope="col" class="col name"><?= $escaper->escapeHtml(__('Name')) ?></th>
+                    <th scope="col" class="col email"><?= $escaper->escapeHtml(__('Email')) ?></th>
+                    <th scope="col" class="col role"><?= $escaper->escapeHtml(__('Role')) ?></th>
+                    <th scope="col" class="col status"><?= $escaper->escapeHtml(__('Status')) ?></th>
+                    <th scope="col" class="col actions"><?= $escaper->escapeHtml(__('Actions')) ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($users && $users->getSize()): ?>
+                    <?php foreach ($users as $user): ?>
+                        <tr>
+                            <td data-th="<?= $escaper->escapeHtml(__('Name')) ?>" class="col name">
+                                <?= $escaper->escapeHtml(
+                                    $user->getData('firstname') . ' ' . $user->getData('lastname')
+                                ) ?>
+                            </td>
+                            <td data-th="<?= $escaper->escapeHtml(__('Email')) ?>" class="col email">
+                                <?= $escaper->escapeHtml($user->getData('email')) ?>
+                            </td>
+                            <td data-th="<?= $escaper->escapeHtml(__('Role')) ?>" class="col role">
+                                <?= $escaper->escapeHtml($user->getData('role_name')) ?>
+                            </td>
+                            <!--
+                            <td data-th="<?= $escaper->escapeHtml(__('Status')) ?>" class="col status">
+                                <?php // Status check
+                                ?>
+                            </td> 
+                            -->
+                            <td data-th="<?= $escaper->escapeHtml(__('Status')) ?>" class="col status">
+                                <?php
+                                $isActive = (int)$user->getData('approve_account');
+                                ?>
+                                <?= $isActive === 1
+                                    ? $escaper->escapeHtml(__('Active'))
+                                    : $escaper->escapeHtml(__('Inactive')) ?>
+                            </td>
+                            <td data-th="<?= $escaper->escapeHtml(__('Actions')) ?>" class="col actions">
+                                <?php if ($user->getData('customer_id') != $block->getCurrentCustomerId()): ?>
+                                    <a href="<?= $escaper->escapeUrl($block->getEditUrl($user->getId())) ?>"
+                                        class="action view">
+                                        <span><?= $escaper->escapeHtml(__('Edit')) ?></span>
+                                    </a>
+                                    <?php
+                                    $deletePostData = $block->getPostData($block->getDeleteUrl($user->getId()));
+                                    ?>
+                                    <a href="#"
+                                        class="action delete"
+                                        data-post='<?= /* @noEscape */ $deletePostData ?>'>
+                                        <span><?= $escaper->escapeHtml(__('Delete')) ?></span>
+                                    </a>
+                                    <?php
+                                    $isActive = (int)$user->getData('approve_account');
+                                    $statusLabel = $isActive === 1 ? __('Disable') : __('Enable');
+                                    $statusPostData = $block->getPostData($block->getStatusUrl($user->getId()));
+                                    ?>
+                                    <a href="#"
+                                        class="action status"
+                                        data-post='<?= /* @noEscape */ $statusPostData ?>'>
+                                        <span><?= $escaper->escapeHtml($statusLabel) ?></span>
+                                    </a>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="5" class="message info empty">
+                            <span><?= $escaper->escapeHtml(__('No users found for this company.')) ?></span>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    function deleteUser(url) {
+        if (confirm('<?= $escaper->escapeJs(__('Are you sure you want to delete this user?')) ?>')) {
+            window.location.href = url;
+        }
+    }
+</script>
