@@ -11,7 +11,30 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/menu.xsd">
     <menu>
-        <add id="Orangecat_Company::company_manage" title="OrangeCat B2B" module="Orangecat_Company" sortOrder="50" parent="Magento_Customer::customer" resource="Orangecat_Company::company_manage"/>
-        <add id="Orangecat_Company::company" title="Companies" module="Orangecat_Company" sortOrder="10" parent="Orangecat_Company::company_manage" action="mycompany/company/" resource="Orangecat_Company::company"/>
+        <!-- A subsection inside the main Orangecat Menu -->
+        <add id="Orangecat_Company::companies_section" 
+             title="Companies" 
+             module="Orangecat_Company" 
+             sortOrder="10" parent="Orangecat_Core::menu" 
+             resource="Orangecat_Company::company_manage"
+        />
+        <!-- The actual link to the grid -->
+        <add id="Orangecat_Company::company" 
+             title="Manage Companies" 
+             module="Orangecat_Company" 
+             sortOrder="10" 
+             parent="Orangecat_Company::companies_section" 
+             action="mycompany/company/" 
+             resource="Orangecat_Company::company"
+        />
+        <!-- The configuration link -->
+        <add id="Orangecat_Company::config" 
+             title="Settings" 
+             module="Orangecat_Company" 
+             sortOrder="99999" 
+             parent="Orangecat_Company::companies_section" 
+             action="adminhtml/system_config/edit/section/mycompany/" 
+             resource="Orangecat_Company::config"
+        />
     </menu>
 </config>

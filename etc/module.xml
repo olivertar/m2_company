@@ -17,6 +17,7 @@
             <module name="Magento_Backend"/>
             <module name="Magento_Ui"/>
             <module name="Magento_Theme"/>
+            <module name="Orangecat-Core"/>
         </sequence>
     </module>
 </config>

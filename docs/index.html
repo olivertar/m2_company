@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orangecat Company Module - User Manual</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/png" href="img/logo_catorange.png">
+</head>
+
+<body>
+
+    <header>
+        <div class="container header-content">
+            <img src="img/logo_catorange.png" alt="OrangeCat" class="logo">
+            <div class="header-text">
+                <h1>OrangeCat Company Module</h1>
+                <p>User Manual & Documentation</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Table of Contents -->
+        <h2 id="index">Table of Contents</h2>
+        <div class="toc">
+            <ul>
+                <li><a href="#introduction">1. Introduction</a></li>
+                <li><a href="#configuration">2. Configuration</a></li>
+                <li><a href="#frontend-workflow">3. Frontend Workflow</a></li>
+                <li><a href="#admin-workflow">4. Admin Workflow</a></li>
+                <li><a href="#api-usage">5. API Usage</a></li>
+            </ul>
+        </div>
+
+        <!-- 1. Introduction -->
+        <section id="introduction">
+            <h2>1. Introduction</h2>
+            <p>The <strong>Orangecat Company</strong> module for Magento 2 effectively bridging the gap between B2B
+                functionality and standard Magento customer management. It allows for the creation and management of
+                companies, assigning customers to these companies, and managing their specific attributes and addresses.
+            </p>
+            <p>This manual covers the configuration, frontend user experience, administrative management, and API
+                endpoints available within the module.</p>
+        </section>
+
+        <!-- 2. Configuration -->
+        <section id="configuration">
+            <h2>2. Configuration</h2>
+            <p>The module settings can be found in the Magento Admin under <strong>Stores > Configuration > Orangecat >
+                    Company</strong>. Here you can configure general settings for the module behavior.</p>
+
+            <img src="img/company_admin_settings.png" alt="Company General Settings" class="screenshot">
+            <p class="caption">Figure 2.1: General Configuration Settings</p>
+        </section>
+
+        <!-- 3. Frontend Workflow -->
+        <section id="frontend-workflow">
+            <h2>3. Frontend Workflow</h2>
+            <p>The module enhances the frontend user experience by allowing users to register their companies and manage
+                their profiles.</p>
+
+            <h3>3.1. Company Registration</h3>
+            <p>Users can access the company registration form to sign up. This form collects necessary company details.
+            </p>
+            <img src="img/company_register_form.png" alt="Company Registration Form" class="screenshot">
+            <p class="caption">Figure 3.1: Company Registration Form</p>
+
+            <h3>3.2. Registration Success</h3>
+            <p>Upon successful submission, users receive a confirmation message.</p>
+            <img src="img/company_register_success.png" alt="Registration Success" class="screenshot">
+            <p class="caption">Figure 3.2: Successful Registration Message</p>
+
+            <h3>3.3. Company User Management</h3>
+            <p>Company administrators can manage users directly from the frontend.</p>
+
+            <h4>Setting Password</h4>
+            <p>Users added by the company administrator will need to set their password upon their first login or via
+                the link sent to their email.</p>
+            <img src="img/company_customer_set_password.png" alt="Set Password Screen" class="screenshot">
+            <p class="caption">Figure 3.3: Set Password Screen</p>
+
+            <h4>Login & Access Control</h4>
+            <p>Access to the platform is controlled based on the company's status.</p>
+            <p>If a company is disabled by the administrator, users associated with that company will be restricted from
+                logging in.</p>
+            <img src="img/company_customer_login_disable_company.png" alt="Login Disabled Company" class="screenshot">
+            <p class="caption">Figure 3.4: Login Attempt for Disabled Company</p>
+
+            <h4>List of Users</h4>
+            <p>View all users associated with the company.</p>
+            <img src="img/company_customer_company_users_list.png" alt="Company Users List" class="screenshot">
+            <p class="caption">Figure 3.5: List of Company Users</p>
+
+            <h4>Adding a User</h4>
+            <p>Add new users to the company by filling out the user details form.</p>
+            <img src="img/company_customer_company_user_add.png" alt="Add Company User" class="screenshot">
+            <p class="caption">Figure 3.6: Form to Add a New Company User</p>
+
+            <h3>3.4. Email Notifications</h3>
+            <p>The system sends automated emails to both administrators and customers during the registration process.
+            </p>
+
+            <h4>Email to Admin (New Registration)</h4>
+            <p>Admins are notified when a new company registers.</p>
+            <img src="img/company_register_email_to_admin.png" alt="Registration Email to Admin" class="screenshot">
+            <p class="caption">Figure 3.7: New Company Registration Notification for Admin</p>
+
+            <h4>Email to User (Welcome)</h4>
+            <p>Users receive a welcome email confirming their registration.</p>
+            <img src="img/company_register_email_to_user.png" alt="Registration Email to User" class="screenshot">
+            <p class="caption">Figure 3.8: Welcome Email for User</p>
+
+            <h4>Email to User (Added by Admin)</h4>
+            <p>When a company administrator adds a new user, the user receives an email notification with instructions.
+            </p>
+            <img src="img/company_customer_company_user_add_email.png" alt="User Added Email" class="screenshot">
+            <p class="caption">Figure 3.9: Email Notification for User Added by Company Admin</p>
+
+            <h4>Email to User (Company Approved)</h4>
+            <p>Users are notified when their company registration has been approved by the platform administrator.</p>
+            <img src="img/company_aproved_emails.png" alt="Company Approved Email" class="screenshot">
+            <p class="caption">Figure 3.10: Email Notification for Company Approval</p>
+
+            <h4>Email Overview</h4>
+            <img src="img/company_register_emails.png" alt="Email Templates" class="screenshot">
+            <p class="caption">Figure 3.11: Overview of Transactional Emails</p>
+        </section>
+
+        <!-- 4. Admin Workflow -->
+        <section id="admin-workflow">
+            <h2>4. Admin Workflow</h2>
+            <p>Administrators have full control over company management from the Magento Admin Panel.</p>
+
+            <h3>4.1. Accessing the Module</h3>
+            <p>Administrators can access the Company management features via the Orangecat menu in the Magento Admin
+                Panel.</p>
+            <img src="img/company_menu.png" alt="Magento Admin Company Menu" class="screenshot">
+            <p class="caption">Figure 4.1: Company Menu in Magento Admin</p>
+
+            <h3>4.2. Managing Companies</h3>
+            <p>Navigate to the companies grid to view all registered companies.</p>
+            <img src="img/company_admin_grid_companies.png" alt="Companies Grid" class="screenshot">
+            <p class="caption">Figure 4.2: Companies Grid View</p>
+
+            <h3>4.3. Editing a Company</h3>
+            <p>Clicking on a company allows you to edit its details across several tabs.</p>
+
+            <h4>General Information</h4>
+            <p>Edit the basic information of the company.</p>
+            <img src="img/company_admin_company_general.png" alt="Edit Company General Info" class="screenshot">
+            <p class="caption">Figure 4.3: Editing Company General Information</p>
+
+            <h4>Addresses</h4>
+            <p>Manage the company's address.</p>
+            <img src="img/company_admin_company_address.png" alt="Edit Company Address" class="screenshot">
+            <p class="caption">Figure 4.4: Managing Company Addresses</p>
+
+            <h4>Admin User</h4>
+            <p>Assign or view the main administrator user for the company.</p>
+            <img src="img/company_admin_company_adminuser.png" alt="Edit Company Admin User" class="screenshot">
+            <p class="caption">Figure 4.5: Managing Company Admin User</p>
+
+            <h3>4.4. Assigning Customers</h3>
+            <p>You can assign individual customers to a company from the customer editing screen.</p>
+            <img src="img/company_admin_customer_assignament_to_company.png" alt="Assign Customer to Company"
+                class="screenshot">
+            <p class="caption">Figure 4.6: Assigning a Customer to a Company</p>
+        </section>
+
+        <!-- 5. API Usage -->
+        <section id="api-usage">
+            <h2>5. API Usage</h2>
+            <p>The module provides REST API endpoints for integration with external systems.</p>
+
+            <h3>5.1. Create Company</h3>
+            <p>Endpoint to create a new company entity.</p>
+            <img src="img/company_API_create_company.png" alt="API Create Company" class="screenshot">
+            <p class="caption">Figure 5.1: Create Company API Request</p>
+
+            <h3>5.2. Get Company</h3>
+            <p>Endpoint to retrieve details of an existing company.</p>
+            <img src="img/company_API_get_company.png" alt="API Get Company" class="screenshot">
+            <p class="caption">Figure 5.2: Get Company API Request</p>
+
+            <h3>5.3. Create Customer</h3>
+            <p>Endpoint to register a customer and link them to a company.</p>
+            <img src="img/company_API_create_customer.png" alt="API Create Customer" class="screenshot">
+            <p class="caption">Figure 5.3: Create Customer API Request</p>
+        </section>
+
+        <footer>
+            <p>&copy; 2024 Orangecat. All rights reserved.</p>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>
