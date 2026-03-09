@@ -21,3 +21,4 @@
         <move element="company-register-link" destination="header.links" after="register-link"/>
     </body>
 </page>
+
