@@ -1,0 +1,35 @@
+<?php
+/**
+ * This file is part of the Orangecat Company package.
+ *
+ * (c) Oliverio Gombert <olivertar@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/** @var \Orangecat\Company\Block\Account\CompanyRegisterLink $block */
+/** @var \Magento\Framework\Escaper $escaper */
+?>
+<!-- ko scope: 'customer' -->
+<!-- ko if: !customer().firstname -->
+<li class="link company-register-link">
+    <a href="<?= $escaper->escapeUrl($block->getHref()) ?>">
+        <?= $escaper->escapeHtml(__($block->getLabel())) ?>
+    </a>
+</li>
+<!-- /ko -->
+<!-- /ko -->
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Magento_Ui/js/core/app": {
+            "components": {
+                "customer": {
+                    "component": "Magento_Customer/js/view/customer"
+                }
+            }
+        }
+    }
+}
+</script>

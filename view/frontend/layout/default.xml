@@ -12,7 +12,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="top.links">
-            <block class="Orangecat\Company\Block\Account\CompanyRegisterLink" name="company-register-link">
+            <block class="Orangecat\Company\Block\Account\CompanyRegisterLink" name="company-register-link" template="Orangecat_Company::account/company-register-link.phtml">
                 <arguments>
                     <argument name="label" xsi:type="string" translate="true">Create a Company</argument>
                 </arguments>
