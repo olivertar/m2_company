@@ -42,6 +42,8 @@
         <column xsi:type="int" name="company_id" padding="10" unsigned="true" nullable="false" comment="Company ID"/>
         <column xsi:type="int" name="customer_id" padding="10" unsigned="true" nullable="false" comment="Customer ID"/>
         <column xsi:type="int" name="role_id" padding="10" unsigned="true" nullable="false" comment="Role ID"/>
+        <column xsi:type="decimal" name="max_purchase_amount" precision="12" scale="4" nullable="true" comment="Maximum Amount per Purchase"/>
+        <column xsi:type="decimal" name="max_period_amount" precision="12" scale="4" nullable="true" comment="Maximum Amount per Period"/>
         
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="link_id"/>

@@ -136,6 +136,20 @@ class Edit extends Template
     }
 
     /**
+     * Get Company Buyer Role ID
+     *
+     * @return int|null
+     */
+    public function getCompanyBuyerRoleId()
+    {
+        $collection = $this->roleCollectionFactory->create();
+        $collection->addFieldToFilter('role_name', 'Company Buyer');
+        $collection->setPageSize(1);
+        $role = $collection->getFirstItem();
+        return $role->getId() ? (int)$role->getId() : null;
+    }
+
+    /**
      * Get Save Action URL
      *
      * @return string

@@ -96,6 +96,29 @@ $isEdit = $user && $user->getId();
                 </select>
             </div>
         </div>
+
+        <div class="field max-purchase-amount buyer-limits-fields" style="display: none;">
+            <label class="label" for="max_purchase_amount"><span><?= $escaper->escapeHtml(__('Max Amount per Purchase')) ?></span></label>
+            <div class="control">
+                <input type="text"
+                    id="max_purchase_amount"
+                    name="max_purchase_amount"
+                    value="<?= ($isEdit && $userLink) ? $escaper->escapeHtmlAttr($userLink->getMaxPurchaseAmount()) : '' ?>"
+                    title="<?= $escaper->escapeHtmlAttr(__('Max Amount per Purchase')) ?>"
+                    class="input-text validate-number">
+            </div>
+        </div>
+        <div class="field max-period-amount buyer-limits-fields" style="display: none;">
+            <label class="label" for="max_period_amount"><span><?= $escaper->escapeHtml(__('Max Amount per Period')) ?></span></label>
+            <div class="control">
+                <input type="text"
+                    id="max_period_amount"
+                    name="max_period_amount"
+                    value="<?= ($isEdit && $userLink) ? $escaper->escapeHtmlAttr($userLink->getMaxPeriodAmount()) : '' ?>"
+                    title="<?= $escaper->escapeHtmlAttr(__('Max Amount per Period')) ?>"
+                    class="input-text validate-number">
+            </div>
+        </div>
     </fieldset>
     <div class="actions-toolbar">
         <div class="primary">
@@ -122,16 +145,26 @@ $isEdit = $user && $user->getId();
     </div>
 </form>
 <script>
-    function deleteUser() {
-        if (confirm('<?= $escaper->escapeJs(__('Are you sure you want to delete this user?')) ?>')) {
-            window.location.href = '<?= $escaper->escapeUrl($block->getDeleteUrl()) ?>';
-        }
-    }
     require([
         "jquery",
         "mage/mage"
     ], function($) {
         var dataForm = $('#form-validate');
         dataForm.mage('validation', {});
+
+        var buyerRoleId = '<?= (int)$block->getCompanyBuyerRoleId() ?>';
+        var roleSelect = $('#role_id');
+        var buyerFields = $('.buyer-limits-fields');
+
+        function toggleBuyerFields() {
+            if (roleSelect.val() == buyerRoleId) {
+                buyerFields.show();
+            } else {
+                buyerFields.hide();
+            }
+        }
+
+        roleSelect.on('change', toggleBuyerFields);
+        toggleBuyerFields(); // Initial check
     });
 </script>

@@ -144,7 +144,11 @@ class Save implements HttpPostActionInterface
                 }
 
                 // Update Company Link
-                $this->companyManagement->assignCustomer($currentCompanyId, $customer->getId(), $roleId);
+                $linkData = [
+                    'max_purchase_amount' => isset($data['max_purchase_amount']) ? $data['max_purchase_amount'] : null,
+                    'max_period_amount' => isset($data['max_period_amount']) ? $data['max_period_amount'] : null
+                ];
+                $this->companyManagement->assignCustomer($currentCompanyId, $customer->getId(), $roleId, $linkData);
 
                 $this->messageManager->addSuccessMessage(__('The user has been updated.'));
             } else {
@@ -181,7 +185,11 @@ class Save implements HttpPostActionInterface
                     $customer = $this->customerRepository->get($email); // Reload as Interface
                 }
 
-                $this->companyManagement->assignCustomer($currentCompanyId, $customer->getId(), $roleId);
+                $linkData = [
+                    'max_purchase_amount' => isset($data['max_purchase_amount']) ? $data['max_purchase_amount'] : null,
+                    'max_period_amount' => isset($data['max_period_amount']) ? $data['max_period_amount'] : null
+                ];
+                $this->companyManagement->assignCustomer($currentCompanyId, $customer->getId(), $roleId, $linkData);
 
                 // Send Custom Welcome Email
                 $this->sendWelcomeEmail($customer, $currentCompanyId);

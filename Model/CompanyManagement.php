@@ -60,6 +60,10 @@ class CompanyManagement implements CompanyManagementInterface
             $link->setRoleId($roleId);
         }
 
+        if (!empty($data)) {
+            $link->addData($data);
+        }
+
         try {
             $this->resource->save($link);
         } catch (\Exception $e) {

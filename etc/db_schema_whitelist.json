@@ -1,0 +1,52 @@
+{
+    "mycompany": {
+        "column": {
+            "entity_id": true,
+            "name": true,
+            "name_legal": true,
+            "email": true,
+            "tax_id": true,
+            "address": true,
+            "city": true,
+            "country": true,
+            "region": true,
+            "postalcode": true,
+            "telephone": true,
+            "status": true,
+            "website_id": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MYCOMPANY_WEBSITE_ID_STORE_WEBSITE_WEBSITE_ID": true
+        }
+    },
+    "mycompany_role": {
+        "column": {
+            "role_id": true,
+            "role_name": true,
+            "permissions": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "mycompany_customer": {
+        "column": {
+            "link_id": true,
+            "company_id": true,
+            "customer_id": true,
+            "role_id": true,
+            "max_purchase_amount": true,
+            "max_period_amount": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MYCOMPANY_CUSTOMER_COMPANY_ID_MYCOMPANY_ENTITY_ID": true,
+            "MYCOMPANY_CUSTOMER_CUSTOMER_ID_CUSTOMER_ENTITY_ENTITY_ID": true,
+            "MYCOMPANY_CUSTOMER_ROLE_ID_MYCOMPANY_ROLE_ROLE_ID": true,
+            "MYCOMPANY_CUSTOMER_COMPANY_ID_CUSTOMER_ID": true
+        }
+    }
+}

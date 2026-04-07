@@ -17,6 +17,8 @@ interface RoleInterface
     public const ROLE_NAME = 'role_name';
     public const PERMISSIONS = 'permissions';
     public const ADMIN_ROLE_ID = 1;
+    public const MANAGER_ROLE_ID = 2;
+    public const BUYER_ROLE_ID = 3;
 
     /**
      * Get Role ID
