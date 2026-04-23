@@ -98,7 +98,9 @@ $isEdit = $user && $user->getId();
         </div>
 
         <div class="field max-purchase-amount buyer-limits-fields" style="display: none;">
-            <label class="label" for="max_purchase_amount"><span><?= $escaper->escapeHtml(__('Max Amount per Purchase')) ?></span></label>
+            <label class="label" for="max_purchase_amount">
+                <span><?= $escaper->escapeHtml(__('Max Amount per Purchase')) ?></span>
+            </label>
             <div class="control">
                 <input type="text"
                     id="max_purchase_amount"
@@ -109,7 +111,9 @@ $isEdit = $user && $user->getId();
             </div>
         </div>
         <div class="field max-period-amount buyer-limits-fields" style="display: none;">
-            <label class="label" for="max_period_amount"><span><?= $escaper->escapeHtml(__('Max Amount per Period')) ?></span></label>
+            <label class="label" for="max_period_amount">
+                <span><?= $escaper->escapeHtml(__('Max Amount per Period')) ?></span>
+            </label>
             <div class="control">
                 <input type="text"
                     id="max_period_amount"

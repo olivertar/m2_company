@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Orangecat\Company\Controller\Adminhtml\Company;
 
 use Magento\Backend\App\Action;
@@ -20,19 +22,13 @@ class Delete extends Action
     public const ADMIN_RESOURCE = 'Orangecat_Company::company_delete';
 
     /**
-     * @var CompanyRepositoryInterface
-     */
-    protected $companyRepository;
-
-    /**
      * @param Context $context
      * @param CompanyRepositoryInterface $companyRepository
      */
     public function __construct(
         Context $context,
-        CompanyRepositoryInterface $companyRepository
+        protected CompanyRepositoryInterface $companyRepository
     ) {
-        $this->companyRepository = $companyRepository;
         parent::__construct($context);
     }
 

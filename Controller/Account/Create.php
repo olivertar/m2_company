@@ -23,17 +23,11 @@ use Magento\Framework\View\Result\PageFactory;
 class Create implements HttpGetActionInterface
 {
     /**
-     * @var PageFactory
-     */
-    private PageFactory $resultPageFactory;
-
-    /**
      * @param PageFactory $resultPageFactory
      */
     public function __construct(
-        PageFactory $resultPageFactory
+        private PageFactory $resultPageFactory
     ) {
-        $this->resultPageFactory = $resultPageFactory;
     }
 
     /**

@@ -28,20 +28,14 @@ class Edit extends Action implements HttpGetActionInterface
     public const ADMIN_RESOURCE = 'Orangecat_Company::company_save';
 
     /**
-     * @var PageFactory
-     */
-    private PageFactory $resultPageFactory;
-
-    /**
      * @param Context $context
      * @param PageFactory $resultPageFactory
      */
     public function __construct(
         Context $context,
-        PageFactory $resultPageFactory
+        private PageFactory $resultPageFactory
     ) {
         parent::__construct($context);
-        $this->resultPageFactory = $resultPageFactory;
     }
 
     /**

@@ -21,28 +21,16 @@ use Magento\Framework\View\LayoutFactory;
 class CustomerGrid extends Action
 {
     /**
-     * @var RawFactory
-     */
-    protected $resultRawFactory;
-
-    /**
-     * @var LayoutFactory
-     */
-    protected $layoutFactory;
-
-    /**
      * @param Context $context
      * @param RawFactory $resultRawFactory
      * @param LayoutFactory $layoutFactory
      */
     public function __construct(
         Context $context,
-        RawFactory $resultRawFactory,
-        LayoutFactory $layoutFactory
+        protected RawFactory $resultRawFactory,
+        protected LayoutFactory $layoutFactory
     ) {
         parent::__construct($context);
-        $this->resultRawFactory = $resultRawFactory;
-        $this->layoutFactory = $layoutFactory;
     }
 
     /**

@@ -24,23 +24,17 @@ use Magento\Ui\Component\Layout\Tabs\TabWrapper;
 class Company extends TabWrapper
 {
     /**
-     * @var Registry
-     */
-    protected $coreRegistry = null;
-
-    /**
      * @var bool
      */
     protected $isAjaxLoaded = true;
 
     /**
      * @param Context $context
-     * @param Registry $registry
+     * @param Registry $coreRegistry
      * @param array $data
      */
-    public function __construct(Context $context, Registry $registry, array $data = [])
+    public function __construct(Context $context, private Registry $coreRegistry, array $data = [])
     {
-        $this->coreRegistry = $registry;
         parent::__construct($context, $data);
     }
 

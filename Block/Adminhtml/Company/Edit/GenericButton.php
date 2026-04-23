@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Orangecat\Company\Block\Adminhtml\Company\Edit;
 
 use Magento\Backend\Block\Widget\Context;
@@ -17,27 +19,15 @@ use Magento\Framework\Exception\NoSuchEntityException;
 class GenericButton
 {
     /**
-     * @var Context
-     */
-    protected $context;
-
-    /**
-     * @var \Orangecat\Company\Api\CompanyRepositoryInterface
-     */
-    protected $companyRepository;
-
-    /**
      * @param Context $context
      * @param \Orangecat\Company\Api\CompanyRepositoryInterface $companyRepository
      * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
-        Context $context,
-        \Orangecat\Company\Api\CompanyRepositoryInterface $companyRepository,
+        protected Context $context,
+        protected \Orangecat\Company\Api\CompanyRepositoryInterface $companyRepository,
         private \Psr\Log\LoggerInterface $logger
     ) {
-        $this->context = $context;
-        $this->companyRepository = $companyRepository;
     }
 
     /**

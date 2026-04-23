@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Orangecat\Company\Setup\Patch\Data;
 
 use Magento\Framework\Setup\Patch\DataPatchInterface;
@@ -19,33 +21,15 @@ use Orangecat\Company\Model\ResourceModel\Role as RoleResource;
 class InstallDefaultRoles implements DataPatchInterface
 {
     /**
-     * @var ModuleDataSetupInterface
-     */
-    private $moduleDataSetup;
-
-    /**
-     * @var RoleFactory
-     */
-    private $roleFactory;
-
-    /**
-     * @var RoleResource
-     */
-    private $roleResource;
-
-    /**
      * @param ModuleDataSetupInterface $moduleDataSetup
      * @param RoleFactory $roleFactory
      * @param RoleResource $roleResource
      */
     public function __construct(
-        ModuleDataSetupInterface $moduleDataSetup,
-        RoleFactory $roleFactory,
-        RoleResource $roleResource
+        private ModuleDataSetupInterface $moduleDataSetup,
+        private RoleFactory $roleFactory,
+        private RoleResource $roleResource
     ) {
-        $this->moduleDataSetup = $moduleDataSetup;
-        $this->roleFactory = $roleFactory;
-        $this->roleResource = $roleResource;
     }
 
     /**

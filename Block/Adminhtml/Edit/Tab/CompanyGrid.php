@@ -24,21 +24,6 @@ use Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory as L
 class CompanyGrid extends Extended
 {
     /**
-     * @var Registry
-     */
-    protected $coreRegistry = null;
-
-    /**
-     * @var LinkCollectionFactory
-     */
-    protected $linkCollectionFactory;
-
-    /**
-     * @var CollectionFactory
-     */
-    protected $collectionFactory;
-
-    /**
      * @param Context $context
      * @param Data $backendHelper
      * @param CollectionFactory $collectionFactory
@@ -49,14 +34,11 @@ class CompanyGrid extends Extended
     public function __construct(
         Context $context,
         Data $backendHelper,
-        CollectionFactory $collectionFactory,
-        LinkCollectionFactory $linkCollectionFactory,
-        Registry $coreRegistry,
+        protected CollectionFactory $collectionFactory,
+        protected LinkCollectionFactory $linkCollectionFactory,
+        protected Registry $coreRegistry,
         array $data = []
     ) {
-        $this->collectionFactory = $collectionFactory;
-        $this->linkCollectionFactory = $linkCollectionFactory;
-        $this->coreRegistry = $coreRegistry;
         parent::__construct($context, $backendHelper, $data);
     }
 

@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Orangecat\Company\Controller\Adminhtml\Company;
 
 use Magento\Backend\App\Action;
@@ -21,28 +23,16 @@ class InlineEdit extends Action
     public const ADMIN_RESOURCE = 'Orangecat_Company::company';
 
     /**
-     * @var JsonFactory
-     */
-    protected $jsonFactory;
-
-    /**
-     * @var CompanyRepositoryInterface
-     */
-    protected $companyRepository;
-
-    /**
      * @param Context $context
      * @param JsonFactory $jsonFactory
      * @param CompanyRepositoryInterface $companyRepository
      */
     public function __construct(
         Context $context,
-        JsonFactory $jsonFactory,
-        CompanyRepositoryInterface $companyRepository
+        protected JsonFactory $jsonFactory,
+        protected CompanyRepositoryInterface $companyRepository
     ) {
         parent::__construct($context);
-        $this->jsonFactory = $jsonFactory;
-        $this->companyRepository = $companyRepository;
     }
 
     /**

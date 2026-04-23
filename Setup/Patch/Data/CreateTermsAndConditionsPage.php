@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Orangecat\Company\Setup\Patch\Data;
 
 use Magento\Cms\Model\PageFactory;
@@ -19,33 +21,15 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 class CreateTermsAndConditionsPage implements DataPatchInterface
 {
     /**
-     * @var ModuleDataSetupInterface
-     */
-    private $moduleDataSetup;
-
-    /**
-     * @var PageFactory
-     */
-    private $pageFactory;
-
-    /**
-     * @var PageResource
-     */
-    private $pageResource;
-
-    /**
      * @param ModuleDataSetupInterface $moduleDataSetup
      * @param PageFactory $pageFactory
      * @param PageResource $pageResource
      */
     public function __construct(
-        ModuleDataSetupInterface $moduleDataSetup,
-        PageFactory $pageFactory,
-        PageResource $pageResource
+        private ModuleDataSetupInterface $moduleDataSetup,
+        private PageFactory $pageFactory,
+        private PageResource $pageResource
     ) {
-        $this->moduleDataSetup = $moduleDataSetup;
-        $this->pageFactory = $pageFactory;
-        $this->pageResource = $pageResource;
     }
 
     /**

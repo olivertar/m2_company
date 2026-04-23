@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Orangecat\Company\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
@@ -17,21 +19,16 @@ use Orangecat\Company\Model\ResourceModel\Role\CollectionFactory;
 class CompanyRole implements OptionSourceInterface
 {
     /**
-     * @var CollectionFactory
-     */
-    private $collectionFactory;
-
-    /**
      * @var array
      */
-    private $options;
+    private array $options = [];
 
     /**
      * @param CollectionFactory $collectionFactory
      */
-    public function __construct(CollectionFactory $collectionFactory)
-    {
-        $this->collectionFactory = $collectionFactory;
+    public function __construct(
+        private CollectionFactory $collectionFactory
+    ) {
     }
 
     /**
