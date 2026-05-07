@@ -44,7 +44,6 @@ class Save implements HttpPostActionInterface
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\UrlInterface $urlBuilder
-     * @param \Magento\Customer\Model\CustomerFactory $customerModelFactory
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      * @param Validator $formKeyValidator
      */
@@ -64,7 +63,6 @@ class Save implements HttpPostActionInterface
         private StoreManagerInterface $storeManager,
         private ScopeConfigInterface $scopeConfig,
         private \Magento\Framework\UrlInterface $urlBuilder,
-        private \Magento\Customer\Model\CustomerFactory $customerModelFactory,
         private \Magento\Framework\Encryption\EncryptorInterface $encryptor,
         private Validator $formKeyValidator
     ) {
@@ -143,11 +141,9 @@ class Save implements HttpPostActionInterface
 
                 // Update Status (approve_account)
                 if ($status !== null) {
-                    $customerModel = $this->customerModelFactory->create()->load($customer->getId());
-                    if ($customerModel->getId()) {
-                        $customerModel->setData('approve_account', $status);
-                        $customerModel->save();
-                    }
+                    $customerToUpdate = $this->customerRepository->getById($customer->getId());
+                    $customerToUpdate->setCustomAttribute('approve_account', $status);
+                    $this->customerRepository->save($customerToUpdate);
                 }
 
                 // Update Company Link
@@ -169,25 +165,15 @@ class Save implements HttpPostActionInterface
                     );
                     return $resultRedirect->setPath('*/*/create');
                 } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-                    // Create new customer
+                    // Create new customer with hashed password via repository
+                    $password = $this->random->getRandomString(10);
                     $customer = $this->customerFactory->create();
                     $customer->setFirstname($firstname);
                     $customer->setLastname($lastname);
                     $customer->setEmail($email);
-
-                    // Set random password
-                    $password = $this->random->getRandomString(10);
-
-                    // Use Customer Model to save password
-                    $customerModel = $this->customerModelFactory->create();
-                    $customerModel->setData('firstname', $firstname);
-                    $customerModel->setData('lastname', $lastname);
-                    $customerModel->setData('email', $email);
-                    $customerModel->setData('approve_account', $status);
-                    $customerModel->setPassword($password);
-
-                    $customerModel->save();
-                    $customer = $this->customerRepository->get($email); // Reload as Interface
+                    $customer->setCustomAttribute('approve_account', $status);
+                    $passwordHash = $this->encryptor->getHash($password, true);
+                    $customer = $this->customerRepository->save($customer, $passwordHash);
                 }
 
                 $linkData = [
@@ -222,14 +208,14 @@ class Save implements HttpPostActionInterface
             // Manually generate token to avoid triggering standard email or rate limiter
             $newPasswordToken = $this->random->getUniqueHash();
 
-            // We need to save the token to the customer
-            // Use simple model load/save to avoid complexity with Repository data interfaces if attributes missing
-            $customerModel = $this->customerModelFactory->create()->load($customer->getId());
-            $customerModel->setRpToken($newPasswordToken);
-            $customerModel->setRpTokenCreatedAt(
+            // Save reset token via repository to ensure plugins and events fire
+            $customerToUpdate = $this->customerRepository->getById($customer->getId());
+            $customerToUpdate->setCustomAttribute('rp_token', $newPasswordToken);
+            $customerToUpdate->setCustomAttribute(
+                'rp_token_created_at',
                 (new \DateTime())->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT)
             );
-            $customerModel->save();
+            $this->customerRepository->save($customerToUpdate);
 
             // Now Send Email
             $company = $this->companyRepository->get($companyId);

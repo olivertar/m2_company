@@ -27,7 +27,6 @@ class Delete implements \Magento\Framework\App\Action\HttpPostActionInterface
      * @param ManagerInterface $messageManager
      * @param \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $collectionFactory
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
-     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param Validator $formKeyValidator
      */
     public function __construct(
@@ -38,7 +37,6 @@ class Delete implements \Magento\Framework\App\Action\HttpPostActionInterface
         private ManagerInterface $messageManager,
         private \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $collectionFactory,
         private \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
-        private \Magento\Customer\Model\CustomerFactory $customerFactory,
         private Validator $formKeyValidator
     ) {
     }
@@ -109,10 +107,12 @@ class Delete implements \Magento\Framework\App\Action\HttpPostActionInterface
                         );
 
                         // Try Disable
-                        $customerModel = $this->customerFactory->create()->load($targetCustomerId);
-                        if ($customerModel->getId()) {
-                            $customerModel->setData('approve_account', 0); // Disable if cannot delete
-                            $customerModel->save();
+                        try {
+                            $customer = $this->customerRepository->getById($targetCustomerId);
+                            $customer->setCustomAttribute('approve_account', 0);
+                            $this->customerRepository->save($customer);
+                        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+                            // Customer no longer exists, nothing to disable
                         }
                     }
                 } else {

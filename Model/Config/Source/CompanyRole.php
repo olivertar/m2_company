@@ -18,9 +18,9 @@ use Orangecat\Company\Model\ResourceModel\Role\CollectionFactory;
 class CompanyRole implements OptionSourceInterface
 {
     /**
-     * @var array
+     * @var array|null
      */
-    private array $options = [];
+    private ?array $options = null;
 
     /**
      * @param CollectionFactory $collectionFactory
