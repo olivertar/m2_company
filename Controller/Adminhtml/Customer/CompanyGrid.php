@@ -16,6 +16,7 @@ use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\RawFactory;
 use Magento\Framework\View\LayoutFactory;
+use Magento\Framework\Registry;
 
 class CompanyGrid extends Action
 {
@@ -24,11 +25,13 @@ class CompanyGrid extends Action
      * @param Context $context
      * @param RawFactory $resultRawFactory
      * @param LayoutFactory $layoutFactory
+     * @param Registry $registry
      */
     public function __construct(
         Context $context,
         protected RawFactory $resultRawFactory,
-        protected LayoutFactory $layoutFactory
+        protected LayoutFactory $layoutFactory,
+        private Registry $registry
     ) {
         parent::__construct($context);
     }
@@ -42,7 +45,7 @@ class CompanyGrid extends Action
     {
         $id = $this->getRequest()->getParam('id');
         if ($id) {
-            $this->_objectManager->get(\Magento\Framework\Registry::class)->register(
+            $this->registry->register(
                 \Magento\Customer\Controller\RegistryConstants::CURRENT_CUSTOMER_ID,
                 $id
             );
