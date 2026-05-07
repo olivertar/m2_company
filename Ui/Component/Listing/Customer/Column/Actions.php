@@ -71,15 +71,15 @@ class Actions extends Column
                                     'options' => [
                                         [
                                             'label' => __('Email'),
-                                            'value' => '<a href="mailto:' . $item['email'] . '" target="_blank">'
-                                                . $item['email'] . '</a>'
+                                            'value' => '<a href="mailto:' . htmlspecialchars((string)$item['email'], ENT_QUOTES, 'UTF-8') . '" target="_blank">'
+                                                . htmlspecialchars((string)$item['email'], ENT_QUOTES, 'UTF-8') . '</a>'
                                         ],
                                         [
                                             'label' => __('Name'),
                                             'value' => '<a href="' . $this->urlBuilder->getUrl(
                                                 'customer/index/edit',
-                                                ['id' => $item['entity_id']]
-                                            ) . '" target="_blank">' . $item['name'] . '</a>'
+                                                ['id' => (int)$item['entity_id']]
+                                            ) . '" target="_blank">' . htmlspecialchars((string)$item['name'], ENT_QUOTES, 'UTF-8') . '</a>'
                                         ]
                                     ]
                                 ],
