@@ -2,8 +2,8 @@
     "name": "orangecat/module-company",
     "description": "Company management for B2B",
     "require": {
-        "php": "~8.1.0||~8.2.0||~8.3.0",
-        "magento/framework": "*"
+        "php": "^8.1",
+        "magento/framework": "^103.0"
     },
     "type": "magento2-module",
     "version": "1.0.0",
