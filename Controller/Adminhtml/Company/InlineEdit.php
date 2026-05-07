@@ -39,6 +39,16 @@ class InlineEdit extends Action
      *
      * @return \Magento\Framework\Controller\ResultInterface
      */
+    /**
+     * Fields allowed for inline editing.
+     *
+     * @var string[]
+     */
+    private const ALLOWED_INLINE_FIELDS = [
+        'name',
+        'status',
+    ];
+
     public function execute()
     {
         /** @var \Magento\Framework\Controller\Result\Json $resultJson */
@@ -56,8 +66,14 @@ class InlineEdit extends Action
                     try {
                         /** @var \Orangecat\Company\Model\Company $company */
                         $company = $this->companyRepository->get($entityId);
-                        $company->addData($postItems[$entityId]);
-                        $this->companyRepository->save($company);
+                        $filteredData = array_intersect_key(
+                            $postItems[$entityId],
+                            array_flip(self::ALLOWED_INLINE_FIELDS)
+                        );
+                        if (!empty($filteredData)) {
+                            $company->addData($filteredData);
+                            $this->companyRepository->save($company);
+                        }
                     } catch (\Exception $e) {
                         $messages[] = $this->getErrorWithCompanyId(
                             $company,
