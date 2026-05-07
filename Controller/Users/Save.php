@@ -24,6 +24,7 @@ use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\Translate\Inline\StateInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Data\Form\FormKey\Validator;
 
 class Save implements HttpPostActionInterface
 {
@@ -45,6 +46,7 @@ class Save implements HttpPostActionInterface
      * @param \Magento\Framework\UrlInterface $urlBuilder
      * @param \Magento\Customer\Model\CustomerFactory $customerModelFactory
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
+     * @param Validator $formKeyValidator
      */
     public function __construct(
         private Session $customerSession,
@@ -63,7 +65,8 @@ class Save implements HttpPostActionInterface
         private ScopeConfigInterface $scopeConfig,
         private \Magento\Framework\UrlInterface $urlBuilder,
         private \Magento\Customer\Model\CustomerFactory $customerModelFactory,
-        private \Magento\Framework\Encryption\EncryptorInterface $encryptor
+        private \Magento\Framework\Encryption\EncryptorInterface $encryptor,
+        private Validator $formKeyValidator
     ) {
     }
 
@@ -79,6 +82,11 @@ class Save implements HttpPostActionInterface
 
         if (!$this->customerSession->isLoggedIn()) {
             return $resultRedirect->setPath('customer/account/login');
+        }
+
+        if (!$this->formKeyValidator->validate($this->request)) {
+            $this->messageManager->addErrorMessage(__('Invalid form key. Please try again.'));
+            return $resultRedirect->setPath('*/*/index');
         }
 
         $currentCustomerId = $this->customerSession->getCustomerId();
