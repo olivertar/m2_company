@@ -162,14 +162,12 @@ class Save implements HttpPostActionInterface
                 // CREATE NEW
 
                 try {
-                    $customer = $this->customerRepository->get($email);
+                    $this->customerRepository->get($email);
 
-                    // Check if already in a company
-                    $existingCompany = $this->companyManagement->getCompanyIdByCustomerId($customer->getId());
-                    if ($existingCompany) {
-                        $this->messageManager->addErrorMessage(__('This customer is already assigned to a company.'));
-                        return $resultRedirect->setPath('*/*/create');
-                    }
+                    $this->messageManager->addErrorMessage(
+                        __('A customer with this email address already exists. Please use a unique email.')
+                    );
+                    return $resultRedirect->setPath('*/*/create');
                 } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
                     // Create new customer
                     $customer = $this->customerFactory->create();
