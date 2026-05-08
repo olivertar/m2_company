@@ -245,7 +245,8 @@ class CompanyRepository implements CompanyRepositoryInterface
         }
 
         $recipientEmail = $company->getEmail();
-        if (empty($recipientEmail)) {
+        $recipientEmail = str_replace(["\r", "\n", "%0a", "%0d", "%0A", "%0D"], '', $recipientEmail);
+        if (empty($recipientEmail) || !filter_var($recipientEmail, FILTER_VALIDATE_EMAIL)) {
             return;
         }
 

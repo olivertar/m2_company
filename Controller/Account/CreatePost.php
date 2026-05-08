@@ -252,7 +252,8 @@ class CreatePost implements HttpPostActionInterface
         foreach ($recipients as $recipient) {
             try {
                 $recipient = trim($recipient);
-                if (empty($recipient)) {
+                $recipient = str_replace(["\r", "\n", "%0a", "%0d", "%0A", "%0D"], '', $recipient);
+                if (empty($recipient) || !filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
                     continue;
                 }
 
