@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Orangecat\Company\Ui\Component\Listing\Customer\Column;
 
+use Magento\Framework\Escaper;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
@@ -29,6 +30,7 @@ class Actions extends Column
      * @param ContextInterface $context
      * @param UiComponentFactory $uiComponentFactory
      * @param UrlInterface $urlBuilder
+     * @param Escaper $escaper
      * @param array $components
      * @param array $data
      */
@@ -36,6 +38,7 @@ class Actions extends Column
         ContextInterface   $context,
         UiComponentFactory $uiComponentFactory,
         private UrlInterface       $urlBuilder,
+        private Escaper            $escaper,
         array              $components = [],
         array              $data = []
     ) {
@@ -71,15 +74,17 @@ class Actions extends Column
                                     'options' => [
                                         [
                                             'label' => __('Email'),
-                                            'value' => '<a href="mailto:' . htmlspecialchars((string)$item['email'], ENT_QUOTES, 'UTF-8') . '" target="_blank">'
-                                                . htmlspecialchars((string)$item['email'], ENT_QUOTES, 'UTF-8') . '</a>'
+                                            'value' => '<a href="mailto:' . $this->escaper->escapeUrl((string)$item['email']) . '" target="_blank">'
+                                                . $this->escaper->escapeHtml((string)$item['email']) . '</a>'
                                         ],
                                         [
                                             'label' => __('Name'),
-                                            'value' => '<a href="' . $this->urlBuilder->getUrl(
-                                                'customer/index/edit',
-                                                ['id' => (int)$item['entity_id']]
-                                            ) . '" target="_blank">' . htmlspecialchars((string)$item['name'], ENT_QUOTES, 'UTF-8') . '</a>'
+                                            'value' => '<a href="' . $this->escaper->escapeUrl(
+                                                $this->urlBuilder->getUrl(
+                                                    'customer/index/edit',
+                                                    ['id' => (int)$item['entity_id']]
+                                                )
+                                            ) . '" target="_blank">' . $this->escaper->escapeHtml((string)$item['name']) . '</a>'
                                         ]
                                     ]
                                 ],

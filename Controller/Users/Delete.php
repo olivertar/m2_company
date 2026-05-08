@@ -16,6 +16,7 @@ use Orangecat\Company\Model\CompanyManagement;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Message\ManagerInterface;
+use Magento\Framework\Data\Form\FormKey\Validator;
 
 class Delete implements \Magento\Framework\App\Action\HttpPostActionInterface
 {
@@ -28,6 +29,7 @@ class Delete implements \Magento\Framework\App\Action\HttpPostActionInterface
      * @param \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $collectionFactory
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param Validator $formKeyValidator
      */
     public function __construct(
         private Session $customerSession,
@@ -37,7 +39,8 @@ class Delete implements \Magento\Framework\App\Action\HttpPostActionInterface
         private ManagerInterface $messageManager,
         private \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $collectionFactory,
         private \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
-        private \Magento\Customer\Model\CustomerFactory $customerFactory
+        private \Magento\Customer\Model\CustomerFactory $customerFactory,
+        private Validator $formKeyValidator
     ) {
     }
 
@@ -51,7 +54,8 @@ class Delete implements \Magento\Framework\App\Action\HttpPostActionInterface
         /** @var \Magento\Framework\Controller\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
 
-        if (!$this->request->isPost()) {
+        if (!$this->request->isPost() || !$this->formKeyValidator->validate($this->request)) {
+            $this->messageManager->addErrorMessage(__('Invalid request. Please try again.'));
             return $resultRedirect->setPath('*/*/index');
         }
 
