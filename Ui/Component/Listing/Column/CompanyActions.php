@@ -71,7 +71,8 @@ class CompanyActions extends Column
                             'confirm' => [
                                 'title' => __('Delete Company'),
                                 'message' => __('Are you sure you want to delete a company?')
-                            ]
+                            ],
+                            'post' => true
                         ]
                     ];
                 }

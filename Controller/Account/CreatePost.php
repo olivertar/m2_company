@@ -34,6 +34,7 @@ use Psr\Log\LoggerInterface;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\Translate\Inline\StateInterface;
 use Orangecat\Company\Model\Config as CompanyConfig;
+use Magento\Framework\App\CacheInterface;
 
 /**
  * Process company registration form
@@ -59,6 +60,7 @@ class CreatePost implements HttpPostActionInterface
      * @param TransportBuilder $transportBuilder
      * @param StateInterface $inlineTranslation
      * @param CompanyConfig $config
+     * @param CacheInterface $cache
      */
     public function __construct(
         private RequestInterface $request,
@@ -77,7 +79,8 @@ class CreatePost implements HttpPostActionInterface
         private CompanyCustomerFactory $companyCustomerFactory,
         private TransportBuilder $transportBuilder,
         private StateInterface $inlineTranslation,
-        private CompanyConfig $config
+        private CompanyConfig $config,
+        private CacheInterface $cache
     ) {
     }
 
@@ -92,6 +95,16 @@ class CreatePost implements HttpPostActionInterface
             $this->messageManager->addErrorMessage(__('Invalid form key. Please try again.'));
             return $resultRedirect->setPath('company/account/create');
         }
+
+        // Rate limiting: max 3 attempts per hour per IP
+        $clientIp = $this->request->getClientIp() ?? 'unknown';
+        $cacheKey = 'company_reg_attempt_' . md5($clientIp);
+        $attempts = (int)$this->cache->load($cacheKey);
+        if ($attempts >= 3) {
+            $this->messageManager->addErrorMessage(__('Too many requests. Please try again later.'));
+            return $resultRedirect->setPath('company/account/create');
+        }
+        $this->cache->save($attempts + 1, $cacheKey, [], 3600);
 
         $data = $this->request->getPostValue();
 
@@ -114,7 +127,7 @@ class CreatePost implements HttpPostActionInterface
                 $this->customerRepository->get($data['admin_email'], $websiteId);
                 $this->dataPersistor->set('company_account_create', $data);
                 $this->messageManager->addErrorMessage(
-                    __('A customer with this email address already exists.')
+                    __('The provided information cannot be used. Please check your details and try again.')
                 );
                 return $resultRedirect->setPath('company/account/create');
             } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
@@ -130,7 +143,7 @@ class CreatePost implements HttpPostActionInterface
                 $companies = $this->companyRepository->getList($searchCriteria);
                 if ($companies->getTotalCount() > 0) {
                     $this->dataPersistor->set('company_account_create', $data);
-                    $this->messageManager->addErrorMessage(__('A company with this email address already exists.'));
+                    $this->messageManager->addErrorMessage(__('The provided information cannot be used. Please check your details and try again.'));
                     return $resultRedirect->setPath('company/account/create');
                 }
             }
@@ -145,7 +158,7 @@ class CreatePost implements HttpPostActionInterface
                 $companies = $this->companyRepository->getList($searchCriteria);
                 if ($companies->getTotalCount() > 0) {
                     $this->dataPersistor->set('company_account_create', $data);
-                    $this->messageManager->addErrorMessage(__('A company with this Tax ID already exists.'));
+                    $this->messageManager->addErrorMessage(__('The provided information cannot be used. Please check your details and try again.'));
                     return $resultRedirect->setPath('company/account/create');
                 }
             }
