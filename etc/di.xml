@@ -41,6 +41,7 @@
     <type name="Magento\Framework\Mail\Template\TransportBuilder">
         <plugin name="mycompany_company_email_template_transport_builder" type="Orangecat\Company\Plugin\Mail\Template\TransportBuilderPlugin" sortOrder="10"/>
     </type>
+
     <type name="Magento\Customer\Api\CustomerRepositoryInterface">
         <plugin name="mycompany_prevent_company_admin_deletion" type="Orangecat\Company\Plugin\Customer\Api\CustomerRepositoryInterfacePlugin" sortOrder="10"/>
         <plugin name="mycompany_persist_company_assignment" type="Orangecat\Company\Plugin\Customer\Api\CustomerRepositoryInterfaceSavePlugin" sortOrder="20"/>

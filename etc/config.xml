@@ -6,6 +6,7 @@
                 <enable_email_notification>0</enable_email_notification>
                 <email_template>mycompany_email_email_template</email_template>
                 <company_no_password_template>mycompany_email_company_no_password_template</company_no_password_template>
+                <company_status_change_template>mycompany_email_company_status_change_template</company_status_change_template>
             </email>
             <customers>
                 <allow_frontend_customer_registration>0</allow_frontend_customer_registration>

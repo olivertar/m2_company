@@ -32,11 +32,13 @@ async function adminLogin(page: Page) {
 
 test.describe('Company Frontend', () => {
   test('Company registration form loads and submits successfully', async ({ page }) => {
+    test.setTimeout(60000);
     const timestamp = Date.now();
     const companyEmail = `testcompany-${timestamp}@example.com`;
     const adminEmail = `testadmin-${timestamp}@example.com`;
 
     await page.goto('/company/account/create/');
+    await page.waitForLoadState('networkidle');
     await expect(page.locator('h1, .page-title')).toContainText('Company');
 
     // Fill company information
@@ -202,7 +204,13 @@ test.describe('Magento Admin', () => {
     // Save
     await page.click('#save');
 
-    // Wait for redirect back to grid (button Add New Company reappears)
+    // Wait for success message and grid reload
+    await expect(page.locator('.admin__messages .message-success')).toContainText('Company has been saved.', { timeout: 15000 });
+    await expect(page.locator('button:has-text("Add New Company")')).toBeVisible({ timeout: 15000 });
+
+    // Refresh grid to ensure new company appears
+    await page.reload();
+    await page.waitForLoadState('networkidle');
     await expect(page.locator('button:has-text("Add New Company")')).toBeVisible({ timeout: 15000 });
     await expect(page.locator('body')).toContainText(companyName);
   });

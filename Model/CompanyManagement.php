@@ -180,7 +180,7 @@ class CompanyManagement implements CompanyManagementInterface
         $roleId = $this->getRoleIdByCustomerId($customerId);
         $companyId = $this->getCompanyIdByCustomerId($customerId);
 
-        return $roleId == 1 && $companyId;
+        return (int)$roleId === \Orangecat\Company\Api\Data\RoleInterface::ADMIN_ROLE_ID && $companyId;
     }
 
     /**

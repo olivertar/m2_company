@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -15,7 +16,6 @@ use Orangecat\Company\Model\CompanyManagement;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Message\ManagerInterface;
-use Magento\Framework\Data\Form\FormKey\Validator;
 
 class Delete implements \Magento\Framework\App\Action\HttpPostActionInterface
 {
@@ -27,7 +27,7 @@ class Delete implements \Magento\Framework\App\Action\HttpPostActionInterface
      * @param ManagerInterface $messageManager
      * @param \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $collectionFactory
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
-     * @param Validator $formKeyValidator
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      */
     public function __construct(
         private Session $customerSession,
@@ -37,7 +37,7 @@ class Delete implements \Magento\Framework\App\Action\HttpPostActionInterface
         private ManagerInterface $messageManager,
         private \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $collectionFactory,
         private \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
-        private Validator $formKeyValidator
+        private \Magento\Customer\Model\CustomerFactory $customerFactory
     ) {
     }
 
@@ -57,11 +57,6 @@ class Delete implements \Magento\Framework\App\Action\HttpPostActionInterface
 
         if (!$this->customerSession->isLoggedIn()) {
             return $resultRedirect->setPath('customer/account/login');
-        }
-
-        if (!$this->formKeyValidator->validate($this->request)) {
-            $this->messageManager->addErrorMessage(__('Invalid form key. Please try again.'));
-            return $resultRedirect->setPath('*/*/index');
         }
 
         $currentCustomerId = $this->customerSession->getCustomerId();
@@ -107,12 +102,10 @@ class Delete implements \Magento\Framework\App\Action\HttpPostActionInterface
                         );
 
                         // Try Disable
-                        try {
-                            $customer = $this->customerRepository->getById($targetCustomerId);
-                            $customer->setCustomAttribute('approve_account', 0);
-                            $this->customerRepository->save($customer);
-                        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-                            // Customer no longer exists, nothing to disable
+                        $customerModel = $this->customerFactory->create()->load($targetCustomerId);
+                        if ($customerModel->getId()) {
+                            $customerModel->setData('approve_account', 0); // Disable if cannot delete
+                            $customerModel->save();
                         }
                     }
                 } else {

@@ -46,6 +46,7 @@ class Save implements HttpPostActionInterface
      * @param \Magento\Framework\UrlInterface $urlBuilder
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      * @param Validator $formKeyValidator
+     * @param \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $companyCustomerCollectionFactory
      */
     public function __construct(
         private Session $customerSession,
@@ -64,7 +65,8 @@ class Save implements HttpPostActionInterface
         private ScopeConfigInterface $scopeConfig,
         private \Magento\Framework\UrlInterface $urlBuilder,
         private \Magento\Framework\Encryption\EncryptorInterface $encryptor,
-        private Validator $formKeyValidator
+        private Validator $formKeyValidator,
+        private \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $companyCustomerCollectionFactory
     ) {
     }
 
@@ -108,8 +110,8 @@ class Save implements HttpPostActionInterface
             $roleId = (int)$data['role_id'];
             $status = isset($data['status']) ? (int)$data['status'] : 1;
 
-            // Role 1 check
-            if ($roleId == 1) {
+            // Prevent assigning Company Admin role
+            if ((int)$roleId === \Orangecat\Company\Api\Data\RoleInterface::ADMIN_ROLE_ID) {
                 $this->messageManager->addErrorMessage(__('You cannot assign the Company Admin role.'));
                 return $resultRedirect->setPath('*/*/index');
             }
@@ -117,9 +119,23 @@ class Save implements HttpPostActionInterface
             if ($linkId) {
                 // EDIT EXISTING
 
-                // Load by email to find the customer.
-                // Ideally we should load by link_id to be safer, but current architecture relies on email uniqueness.
-                $customer = $this->customerRepository->get($email);
+                // Load via link_id to ensure integrity
+                $collection = $this->companyCustomerCollectionFactory->create();
+                $collection->addFieldToFilter('link_id', $linkId);
+                $link = $collection->getFirstItem();
+
+                if (!$link->getId()) {
+                    $this->messageManager->addErrorMessage(__('User link not found.'));
+                    return $resultRedirect->setPath('*/*/index');
+                }
+
+                $customer = $this->customerRepository->getById((int)$link->getCustomerId());
+
+                // Verify email matches to prevent tampering
+                if ($customer->getEmail() !== $email) {
+                    $this->messageManager->addErrorMessage(__('Email mismatch. Please refresh and try again.'));
+                    return $resultRedirect->setPath('*/*/index');
+                }
 
                 // Security Check: Ensure admin can manage this user
                 try {

@@ -86,7 +86,7 @@ class ListUsers extends Template
                     \Magento\Customer\Model\Customer::ENTITY,
                     'approve_account'
                 );
-                $attributeId = $attribute->getAttributeId();
+                $attributeId = (int)$attribute->getAttributeId();
 
                 // Join customer_entity_int (assuming approve_account is int)
                 $this->userCollection->getSelect()->joinLeft(

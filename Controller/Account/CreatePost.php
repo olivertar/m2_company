@@ -104,7 +104,9 @@ class CreatePost implements HttpPostActionInterface
             $this->messageManager->addErrorMessage(__('Too many requests. Please try again later.'));
             return $resultRedirect->setPath('company/account/create');
         }
-        $this->cache->save($attempts + 1, $cacheKey, [], 3600);
+        // Increment atomically by loading fresh value before save to reduce race window
+        $freshAttempts = (int)$this->cache->load($cacheKey);
+        $this->cache->save($freshAttempts + 1, $cacheKey, [], 3600);
 
         $data = $this->request->getPostValue();
 

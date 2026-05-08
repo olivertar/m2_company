@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -23,6 +24,8 @@ use Orangecat\Company\Model\ResourceModel\Company\CollectionFactory as CompanyCo
 use Orangecat\Company\Model\CompanyFactory;
 use Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory as CompanyCustomerCollectionFactory;
 use Orangecat\Company\Api\Data\RoleInterface;
+use Magento\Customer\Model\CustomerFactory;
+use Magento\Customer\Model\ResourceModel\Customer as CustomerResource;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\InputException;
@@ -41,6 +44,8 @@ class CompanyRepository implements CompanyRepositoryInterface
      * @param CompanySearchResultsInterfaceFactory $searchResultsFactory
      * @param CollectionProcessorInterface $collectionProcessor
      * @param CompanyCustomerCollectionFactory $companyCustomerCollectionFactory
+     * @param CustomerFactory $customerFactory
+     * @param CustomerResource $customerResource
      * @param CustomerRepositoryInterface $customerRepository
      * @param \Psr\Log\LoggerInterface $logger
      * @param TransportBuilder $transportBuilder
@@ -55,6 +60,8 @@ class CompanyRepository implements CompanyRepositoryInterface
         private CompanySearchResultsInterfaceFactory $searchResultsFactory,
         private CollectionProcessorInterface $collectionProcessor,
         private CompanyCustomerCollectionFactory $companyCustomerCollectionFactory,
+        private CustomerFactory $customerFactory,
+        private CustomerResource $customerResource,
         private CustomerRepositoryInterface $customerRepository,
         private \Psr\Log\LoggerInterface $logger,
         private TransportBuilder $transportBuilder,
@@ -179,13 +186,15 @@ class CompanyRepository implements CompanyRepositoryInterface
         $approveValue = ((int)$company->getStatus() === 1) ? 1 : 0;
 
         try {
-            $customer = $this->customerRepository->getById($customerId);
-            $attribute = $customer->getCustomAttribute('approve_account');
-            $currentValue = $attribute ? (int)$attribute->getValue() : null;
+            $customer = $this->customerFactory->create();
+            $this->customerResource->load($customer, $customerId);
 
-            if ($currentValue === null || $currentValue !== $approveValue) {
-                $customer->setCustomAttribute('approve_account', $approveValue);
-                $this->customerRepository->save($customer);
+            if ($customer->getId()) {
+                $currentValue = $customer->getData('approve_account');
+                if ($currentValue === null || (int)$currentValue !== $approveValue) {
+                    $customer->setData('approve_account', $approveValue);
+                    $this->customerResource->saveAttribute($customer, 'approve_account');
+                }
             }
         } catch (\Exception $e) {
             $this->logger->error(
