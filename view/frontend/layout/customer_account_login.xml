@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * This file is part of the Orangecat Company package.
+ *
+ * (c) Oliverio Gombert <olivertar@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="customer.new">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">
+                    Orangecat_Company::company_link.phtml
+                </argument>
+            </action>
+            <block class="Magento\Customer\Block\Form\Login\Info" name="customer.link.new" template="Orangecat_Company::customer_link.phtml" ifconfig="mycompany/customers/allow_frontend_customer_registration"/>
+        </referenceBlock>
+    </body>
+</page>
