@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -27,14 +28,20 @@ class Edit extends Action implements HttpGetActionInterface
     public const ADMIN_RESOURCE = 'Orangecat_Company::company_save';
 
     /**
+     * @var PageFactory
+     */
+    private PageFactory $resultPageFactory;
+
+    /**
      * @param Context $context
      * @param PageFactory $resultPageFactory
      */
     public function __construct(
         Context $context,
-        private PageFactory $resultPageFactory
+        PageFactory $resultPageFactory
     ) {
         parent::__construct($context);
+        $this->resultPageFactory = $resultPageFactory;
     }
 
     /**

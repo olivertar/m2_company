@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -86,7 +87,7 @@ class ListUsers extends Template
                     \Magento\Customer\Model\Customer::ENTITY,
                     'approve_account'
                 );
-                $attributeId = (int)$attribute->getAttributeId();
+                $attributeId = $attribute->getAttributeId();
 
                 // Join customer_entity_int (assuming approve_account is int)
                 $this->userCollection->getSelect()->joinLeft(

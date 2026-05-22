@@ -1,22 +1,21 @@
 <?php
 
 /** @var \Orangecat\Company\Block\Adminhtml\Edit\Tab\Role $block */
-$options = $block->getOptions();
 ?>
 <div class="admin__field field field-role_id">
-    <label class="label admin__field-label" for="<?= $block->escapeHtmlAttr($block->getFieldId()) ?>">
-        <span><?= $block->escapeHtml(__('Company Role')) ?></span>
+    <label class="label admin__field-label" for="<?= $escaper->escapeHtmlAttr($block->getFieldId()) ?>">
+        <span><?= $escaper->escapeHtml(__('Company Role')) ?></span>
     </label>
     <div class="admin__field-control control">
-        <select id="<?= $block->escapeHtmlAttr($block->getFieldId()) ?>"
-            name="<?= $block->escapeHtmlAttr($block->getFieldName()) ?>"
+        <select id="<?= $escaper->escapeHtmlAttr($block->getFieldId()) ?>"
+            name="<?= $escaper->escapeHtmlAttr($block->getFieldName()) ?>"
             data-form-part="customer_form"
             class="admin__control-select">
-            <option value=""><?= $block->escapeHtml(__('Select a Role')) ?></option>
-            <?php foreach ($options as $option): ?>
-                <option value="<?= $block->escapeHtmlAttr($option['value']) ?>"
+            <option value=""><?= $escaper->escapeHtml(__('Select a Role')) ?></option>
+            <?php foreach ($block->getOptions() as $option): ?>
+                <option value="<?= $escaper->escapeHtmlAttr($option['value']) ?>"
                     <?= $option['value'] == $block->getCurrentRoleId() ? 'selected="selected"' : '' ?>>
-                    <?= $block->escapeHtml($option['label']) ?>
+                    <?= $escaper->escapeHtml($option['label']) ?>
                 </option>
             <?php endforeach; ?>
         </select>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -11,15 +12,12 @@
 namespace Orangecat\Company\Model;
 
 use Orangecat\Company\Api\CompanyManagementInterface;
-use Orangecat\Company\Api\CompanyRepositoryInterface;
-use Orangecat\Company\Api\RoleRepositoryInterface;
 use Orangecat\Company\Model\ResourceModel\CompanyCustomer as CompanyCustomerResource;
 use Orangecat\Company\Model\CompanyCustomerFactory;
 use Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory as CompanyCustomerCollectionFactory;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Exception\LocalizedException;
 use Orangecat\Company\Model\CompanyCustomer;
 
 use Magento\Framework\Registry;
@@ -31,8 +29,6 @@ class CompanyManagement implements CompanyManagementInterface
      * @param CompanyCustomerFactory $companyCustomerFactory
      * @param CompanyCustomerCollectionFactory $collectionFactory
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
-     * @param CompanyRepositoryInterface $companyRepository
-     * @param RoleRepositoryInterface $roleRepository
      * @param Registry $registry
      */
     public function __construct(
@@ -40,8 +36,6 @@ class CompanyManagement implements CompanyManagementInterface
         private CompanyCustomerFactory $companyCustomerFactory,
         private CompanyCustomerCollectionFactory $collectionFactory,
         private \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
-        private CompanyRepositoryInterface $companyRepository,
-        private RoleRepositoryInterface $roleRepository,
         private Registry $registry
     ) {
     }
@@ -51,27 +45,6 @@ class CompanyManagement implements CompanyManagementInterface
      */
     public function assignCustomer($companyId, $customerId, $roleId, array $data = [])
     {
-        // Validate Company exists
-        try {
-            $this->companyRepository->get($companyId);
-        } catch (NoSuchEntityException $e) {
-            throw new LocalizedException(__('The specified company does not exist.'));
-        }
-
-        // Validate Customer exists
-        try {
-            $this->customerRepository->getById($customerId);
-        } catch (NoSuchEntityException $e) {
-            throw new LocalizedException(__('The specified customer does not exist.'));
-        }
-
-        // Validate Role exists
-        try {
-            $this->roleRepository->get($roleId);
-        } catch (NoSuchEntityException $e) {
-            throw new LocalizedException(__('The specified role does not exist.'));
-        }
-
         // Check if link exists
         $link = $this->getLinkByCustomerId($customerId);
 
@@ -180,7 +153,7 @@ class CompanyManagement implements CompanyManagementInterface
         $roleId = $this->getRoleIdByCustomerId($customerId);
         $companyId = $this->getCompanyIdByCustomerId($customerId);
 
-        return (int)$roleId === \Orangecat\Company\Api\Data\RoleInterface::ADMIN_ROLE_ID && $companyId;
+        return $roleId == 1 && $companyId;
     }
 
     /**

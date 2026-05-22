@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -28,7 +29,7 @@ class DeleteButton extends GenericButton implements ButtonProviderInterface
                 'class' => 'delete',
                 'on_click' => 'deleteConfirm(\'' . __(
                     'Are you sure you want to do this?'
-                ) . '\', \'' . $this->getDeleteUrl() . '\', {method: \'POST\', parameters: {form_key: FORM_KEY}})',
+                ) . '\', \'' . $this->getDeleteUrl() . '\')',
                 'sort_order' => 20,
             ];
         }

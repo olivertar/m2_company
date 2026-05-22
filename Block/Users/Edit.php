@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -37,6 +38,7 @@ class Edit extends Template
      * @param CompanyCustomerCollectionFactory $companyCustomerCollectionFactory
      * @param CustomerRepositoryInterface $customerRepository
      * @param RoleCollectionFactory $roleCollectionFactory
+     * @param \Magento\Customer\Model\CustomerFactory $customerModelFactory
      * @param \Magento\Framework\Data\Helper\PostHelper $postHelper
      * @param \Psr\Log\LoggerInterface $logger
      * @param array $data
@@ -48,6 +50,7 @@ class Edit extends Template
         private CompanyCustomerCollectionFactory $companyCustomerCollectionFactory,
         private CustomerRepositoryInterface $customerRepository,
         private RoleCollectionFactory $roleCollectionFactory,
+        private \Magento\Customer\Model\CustomerFactory $customerModelFactory,
         private \Magento\Framework\Data\Helper\PostHelper $postHelper,
         private \Psr\Log\LoggerInterface $logger,
         array $data = []
@@ -62,10 +65,9 @@ class Edit extends Template
      */
     public function getUserStatus()
     {
-        $user = $this->getUser();
-        if ($user) {
-            $attribute = $user->getCustomAttribute('approve_account');
-            return $attribute ? (int)$attribute->getValue() : 1;
+        if ($this->getUser()) {
+            $customerModel = $this->customerModelFactory->create()->load($this->getUser()->getId());
+            return $customerModel->getData('approve_account'); // 0 or 1
         }
         return 1;
     }

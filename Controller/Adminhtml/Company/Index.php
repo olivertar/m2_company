@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -7,8 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
-declare(strict_types=1);
 
 namespace Orangecat\Company\Controller\Adminhtml\Company;
 
@@ -22,14 +21,20 @@ class Index extends Action
     public const ADMIN_RESOURCE = 'Orangecat_Company::company';
 
     /**
+     * @var PageFactory
+     */
+    private $resultPageFactory;
+
+    /**
      * @param Context $context
      * @param PageFactory $resultPageFactory
      */
     public function __construct(
         Context $context,
-        private PageFactory $resultPageFactory
+        PageFactory $resultPageFactory
     ) {
         parent::__construct($context);
+        $this->resultPageFactory = $resultPageFactory;
     }
 
     /**

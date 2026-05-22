@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -16,7 +17,6 @@ use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Data\Form\FormKey\Validator;
 
 class Status implements \Magento\Framework\App\Action\HttpPostActionInterface
 {
@@ -28,7 +28,6 @@ class Status implements \Magento\Framework\App\Action\HttpPostActionInterface
      * @param ManagerInterface $messageManager
      * @param \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $collectionFactory
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
-     * @param Validator $formKeyValidator
      */
     public function __construct(
         private Session $customerSession,
@@ -37,8 +36,7 @@ class Status implements \Magento\Framework\App\Action\HttpPostActionInterface
         private RequestInterface $request,
         private ManagerInterface $messageManager,
         private \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $collectionFactory,
-        private \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
-        private Validator $formKeyValidator
+        private \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
     ) {
     }
 
@@ -58,11 +56,6 @@ class Status implements \Magento\Framework\App\Action\HttpPostActionInterface
 
         if (!$this->customerSession->isLoggedIn()) {
             return $resultRedirect->setPath('customer/account/login');
-        }
-
-        if (!$this->formKeyValidator->validate($this->request)) {
-            $this->messageManager->addErrorMessage(__('Invalid form key. Please try again.'));
-            return $resultRedirect->setPath('*/*/index');
         }
 
         $currentCustomerId = $this->customerSession->getCustomerId();

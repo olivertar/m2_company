@@ -66,7 +66,7 @@ $users = $block->getUsers();
                                     ?>
                                     <a href="#"
                                         class="action delete"
-                                        data-post="<?= $escaper->escapeHtmlAttr($deletePostData) ?>">
+                                        data-post='<?= /* @noEscape */ $deletePostData ?>'>
                                         <span><?= $escaper->escapeHtml(__('Delete')) ?></span>
                                     </a>
                                     <?php
@@ -76,7 +76,7 @@ $users = $block->getUsers();
                                     ?>
                                     <a href="#"
                                         class="action status"
-                                        data-post="<?= $escaper->escapeHtmlAttr($statusPostData) ?>">
+                                        data-post='<?= /* @noEscape */ $statusPostData ?>'>
                                         <span><?= $escaper->escapeHtml($statusLabel) ?></span>
                                     </a>
                                 <?php endif; ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -19,7 +20,16 @@ use Magento\Framework\View\LayoutFactory;
 
 class CustomerGrid extends Action
 {
-    public const ADMIN_RESOURCE = 'Orangecat_Company::company';
+    /**
+     * @var RawFactory
+     */
+    protected $resultRawFactory;
+
+    /**
+     * @var LayoutFactory
+     */
+    protected $layoutFactory;
+
     /**
      * @param Context $context
      * @param RawFactory $resultRawFactory
@@ -27,10 +37,12 @@ class CustomerGrid extends Action
      */
     public function __construct(
         Context $context,
-        protected RawFactory $resultRawFactory,
-        protected LayoutFactory $layoutFactory
+        RawFactory $resultRawFactory,
+        LayoutFactory $layoutFactory
     ) {
         parent::__construct($context);
+        $this->resultRawFactory = $resultRawFactory;
+        $this->layoutFactory = $layoutFactory;
     }
 
     /**

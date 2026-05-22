@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -7,8 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
-declare(strict_types=1);
 
 namespace Orangecat\Company\Setup\Patch\Data;
 
@@ -20,15 +19,33 @@ use Orangecat\Company\Model\ResourceModel\Role as RoleResource;
 class InstallDefaultRoles implements DataPatchInterface
 {
     /**
+     * @var ModuleDataSetupInterface
+     */
+    private $moduleDataSetup;
+
+    /**
+     * @var RoleFactory
+     */
+    private $roleFactory;
+
+    /**
+     * @var RoleResource
+     */
+    private $roleResource;
+
+    /**
      * @param ModuleDataSetupInterface $moduleDataSetup
      * @param RoleFactory $roleFactory
      * @param RoleResource $roleResource
      */
     public function __construct(
-        private ModuleDataSetupInterface $moduleDataSetup,
-        private RoleFactory $roleFactory,
-        private RoleResource $roleResource
+        ModuleDataSetupInterface $moduleDataSetup,
+        RoleFactory $roleFactory,
+        RoleResource $roleResource
     ) {
+        $this->moduleDataSetup = $moduleDataSetup;
+        $this->roleFactory = $roleFactory;
+        $this->roleResource = $roleResource;
     }
 
     /**

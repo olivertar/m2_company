@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -34,7 +35,6 @@ use Psr\Log\LoggerInterface;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\Translate\Inline\StateInterface;
 use Orangecat\Company\Model\Config as CompanyConfig;
-use Magento\Framework\App\CacheInterface;
 
 /**
  * Process company registration form
@@ -60,7 +60,6 @@ class CreatePost implements HttpPostActionInterface
      * @param TransportBuilder $transportBuilder
      * @param StateInterface $inlineTranslation
      * @param CompanyConfig $config
-     * @param CacheInterface $cache
      */
     public function __construct(
         private RequestInterface $request,
@@ -79,8 +78,7 @@ class CreatePost implements HttpPostActionInterface
         private CompanyCustomerFactory $companyCustomerFactory,
         private TransportBuilder $transportBuilder,
         private StateInterface $inlineTranslation,
-        private CompanyConfig $config,
-        private CacheInterface $cache
+        private CompanyConfig $config
     ) {
     }
 
@@ -95,18 +93,6 @@ class CreatePost implements HttpPostActionInterface
             $this->messageManager->addErrorMessage(__('Invalid form key. Please try again.'));
             return $resultRedirect->setPath('company/account/create');
         }
-
-        // Rate limiting: max 3 attempts per hour per IP
-        $clientIp = $this->request->getClientIp() ?? 'unknown';
-        $cacheKey = 'company_reg_attempt_' . md5($clientIp);
-        $attempts = (int)$this->cache->load($cacheKey);
-        if ($attempts >= 3) {
-            $this->messageManager->addErrorMessage(__('Too many requests. Please try again later.'));
-            return $resultRedirect->setPath('company/account/create');
-        }
-        // Increment atomically by loading fresh value before save to reduce race window
-        $freshAttempts = (int)$this->cache->load($cacheKey);
-        $this->cache->save($freshAttempts + 1, $cacheKey, [], 3600);
 
         $data = $this->request->getPostValue();
 
@@ -129,7 +115,7 @@ class CreatePost implements HttpPostActionInterface
                 $this->customerRepository->get($data['admin_email'], $websiteId);
                 $this->dataPersistor->set('company_account_create', $data);
                 $this->messageManager->addErrorMessage(
-                    __('The provided information cannot be used. Please check your details and try again.')
+                    __('A customer with this email address already exists.')
                 );
                 return $resultRedirect->setPath('company/account/create');
             } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
@@ -145,7 +131,7 @@ class CreatePost implements HttpPostActionInterface
                 $companies = $this->companyRepository->getList($searchCriteria);
                 if ($companies->getTotalCount() > 0) {
                     $this->dataPersistor->set('company_account_create', $data);
-                    $this->messageManager->addErrorMessage(__('The provided information cannot be used. Please check your details and try again.'));
+                    $this->messageManager->addErrorMessage(__('A company with this email address already exists.'));
                     return $resultRedirect->setPath('company/account/create');
                 }
             }
@@ -160,7 +146,7 @@ class CreatePost implements HttpPostActionInterface
                 $companies = $this->companyRepository->getList($searchCriteria);
                 if ($companies->getTotalCount() > 0) {
                     $this->dataPersistor->set('company_account_create', $data);
-                    $this->messageManager->addErrorMessage(__('The provided information cannot be used. Please check your details and try again.'));
+                    $this->messageManager->addErrorMessage(__('A company with this Tax ID already exists.'));
                     return $resultRedirect->setPath('company/account/create');
                 }
             }
@@ -252,8 +238,7 @@ class CreatePost implements HttpPostActionInterface
         foreach ($recipients as $recipient) {
             try {
                 $recipient = trim($recipient);
-                $recipient = str_replace(["\r", "\n", "%0a", "%0d", "%0A", "%0D"], '', $recipient);
-                if (empty($recipient) || !filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+                if (empty($recipient)) {
                     continue;
                 }
 

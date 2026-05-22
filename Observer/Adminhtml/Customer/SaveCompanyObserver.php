@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -12,7 +13,6 @@ declare(strict_types=1);
 
 namespace Orangecat\Company\Observer\Adminhtml\Customer;
 
-use Magento\Framework\AuthorizationInterface;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\App\RequestInterface;
@@ -29,14 +29,12 @@ class SaveCompanyObserver implements ObserverInterface
      * @param CompanyCustomerFactory $companyCustomerFactory
      * @param CollectionFactory $collectionFactory
      * @param RoleCollectionFactory $roleCollectionFactory
-     * @param AuthorizationInterface $authorization
      */
     public function __construct(
         private RequestInterface $request,
         private CompanyCustomerFactory $companyCustomerFactory,
         private CollectionFactory $collectionFactory,
-        private RoleCollectionFactory $roleCollectionFactory,
-        private AuthorizationInterface $authorization
+        private RoleCollectionFactory $roleCollectionFactory
     ) {
     }
 
@@ -48,10 +46,6 @@ class SaveCompanyObserver implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if (!$this->authorization->isAllowed('Orangecat_Company::company_save')) {
-            return;
-        }
-
         $customer = $observer->getEvent()->getCustomer();
         $customerId = (int)$customer->getId();
 

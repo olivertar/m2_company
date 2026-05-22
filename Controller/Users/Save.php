@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -24,7 +25,6 @@ use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\Translate\Inline\StateInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Data\Form\FormKey\Validator;
 
 class Save implements HttpPostActionInterface
 {
@@ -44,9 +44,8 @@ class Save implements HttpPostActionInterface
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\UrlInterface $urlBuilder
+     * @param \Magento\Customer\Model\CustomerFactory $customerModelFactory
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
-     * @param Validator $formKeyValidator
-     * @param \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $companyCustomerCollectionFactory
      */
     public function __construct(
         private Session $customerSession,
@@ -64,9 +63,8 @@ class Save implements HttpPostActionInterface
         private StoreManagerInterface $storeManager,
         private ScopeConfigInterface $scopeConfig,
         private \Magento\Framework\UrlInterface $urlBuilder,
-        private \Magento\Framework\Encryption\EncryptorInterface $encryptor,
-        private Validator $formKeyValidator,
-        private \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $companyCustomerCollectionFactory
+        private \Magento\Customer\Model\CustomerFactory $customerModelFactory,
+        private \Magento\Framework\Encryption\EncryptorInterface $encryptor
     ) {
     }
 
@@ -82,11 +80,6 @@ class Save implements HttpPostActionInterface
 
         if (!$this->customerSession->isLoggedIn()) {
             return $resultRedirect->setPath('customer/account/login');
-        }
-
-        if (!$this->formKeyValidator->validate($this->request)) {
-            $this->messageManager->addErrorMessage(__('Invalid form key. Please try again.'));
-            return $resultRedirect->setPath('*/*/index');
         }
 
         $currentCustomerId = $this->customerSession->getCustomerId();
@@ -110,8 +103,8 @@ class Save implements HttpPostActionInterface
             $roleId = (int)$data['role_id'];
             $status = isset($data['status']) ? (int)$data['status'] : 1;
 
-            // Prevent assigning Company Admin role
-            if ((int)$roleId === \Orangecat\Company\Api\Data\RoleInterface::ADMIN_ROLE_ID) {
+            // Role 1 check
+            if ($roleId == 1) {
                 $this->messageManager->addErrorMessage(__('You cannot assign the Company Admin role.'));
                 return $resultRedirect->setPath('*/*/index');
             }
@@ -119,23 +112,9 @@ class Save implements HttpPostActionInterface
             if ($linkId) {
                 // EDIT EXISTING
 
-                // Load via link_id to ensure integrity
-                $collection = $this->companyCustomerCollectionFactory->create();
-                $collection->addFieldToFilter('link_id', $linkId);
-                $link = $collection->getFirstItem();
-
-                if (!$link->getId()) {
-                    $this->messageManager->addErrorMessage(__('User link not found.'));
-                    return $resultRedirect->setPath('*/*/index');
-                }
-
-                $customer = $this->customerRepository->getById((int)$link->getCustomerId());
-
-                // Verify email matches to prevent tampering
-                if ($customer->getEmail() !== $email) {
-                    $this->messageManager->addErrorMessage(__('Email mismatch. Please refresh and try again.'));
-                    return $resultRedirect->setPath('*/*/index');
-                }
+                // Load by email to find the customer.
+                // Ideally we should load by link_id to be safer, but current architecture relies on email uniqueness.
+                $customer = $this->customerRepository->get($email);
 
                 // Security Check: Ensure admin can manage this user
                 try {
@@ -157,9 +136,11 @@ class Save implements HttpPostActionInterface
 
                 // Update Status (approve_account)
                 if ($status !== null) {
-                    $customerToUpdate = $this->customerRepository->getById($customer->getId());
-                    $customerToUpdate->setCustomAttribute('approve_account', $status);
-                    $this->customerRepository->save($customerToUpdate);
+                    $customerModel = $this->customerModelFactory->create()->load($customer->getId());
+                    if ($customerModel->getId()) {
+                        $customerModel->setData('approve_account', $status);
+                        $customerModel->save();
+                    }
                 }
 
                 // Update Company Link
@@ -174,22 +155,34 @@ class Save implements HttpPostActionInterface
                 // CREATE NEW
 
                 try {
-                    $this->customerRepository->get($email);
+                    $customer = $this->customerRepository->get($email);
 
-                    $this->messageManager->addErrorMessage(
-                        __('A customer with this email address already exists. Please use a unique email.')
-                    );
-                    return $resultRedirect->setPath('*/*/create');
+                    // Check if already in a company
+                    $existingCompany = $this->companyManagement->getCompanyIdByCustomerId($customer->getId());
+                    if ($existingCompany) {
+                        $this->messageManager->addErrorMessage(__('This customer is already assigned to a company.'));
+                        return $resultRedirect->setPath('*/*/create');
+                    }
                 } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-                    // Create new customer with hashed password via repository
-                    $password = $this->random->getRandomString(10);
+                    // Create new customer
                     $customer = $this->customerFactory->create();
                     $customer->setFirstname($firstname);
                     $customer->setLastname($lastname);
                     $customer->setEmail($email);
-                    $customer->setCustomAttribute('approve_account', $status);
-                    $passwordHash = $this->encryptor->getHash($password, true);
-                    $customer = $this->customerRepository->save($customer, $passwordHash);
+
+                    // Set random password
+                    $password = $this->random->getRandomString(10);
+
+                    // Use Customer Model to save password
+                    $customerModel = $this->customerModelFactory->create();
+                    $customerModel->setData('firstname', $firstname);
+                    $customerModel->setData('lastname', $lastname);
+                    $customerModel->setData('email', $email);
+                    $customerModel->setData('approve_account', $status);
+                    $customerModel->setPassword($password);
+
+                    $customerModel->save();
+                    $customer = $this->customerRepository->get($email); // Reload as Interface
                 }
 
                 $linkData = [
@@ -224,14 +217,14 @@ class Save implements HttpPostActionInterface
             // Manually generate token to avoid triggering standard email or rate limiter
             $newPasswordToken = $this->random->getUniqueHash();
 
-            // Save reset token via repository to ensure plugins and events fire
-            $customerToUpdate = $this->customerRepository->getById($customer->getId());
-            $customerToUpdate->setCustomAttribute('rp_token', $newPasswordToken);
-            $customerToUpdate->setCustomAttribute(
-                'rp_token_created_at',
+            // We need to save the token to the customer
+            // Use simple model load/save to avoid complexity with Repository data interfaces if attributes missing
+            $customerModel = $this->customerModelFactory->create()->load($customer->getId());
+            $customerModel->setRpToken($newPasswordToken);
+            $customerModel->setRpTokenCreatedAt(
                 (new \DateTime())->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT)
             );
-            $this->customerRepository->save($customerToUpdate);
+            $customerModel->save();
 
             // Now Send Email
             $company = $this->companyRepository->get($companyId);

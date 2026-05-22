@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -23,6 +24,31 @@ use Orangecat\Company\Model\ResourceModel\Role\CollectionFactory as RoleCollecti
 class CustomerGrid extends Extended
 {
     /**
+     * @var Registry
+     */
+    protected $coreRegistry = null;
+
+    /**
+     * @var CollectionFactory
+     */
+    protected $collectionFactory;
+
+    /**
+     * @var LinkCollectionFactory
+     */
+    protected $linkCollectionFactory;
+
+    /**
+     * @var RoleCollectionFactory
+     */
+    protected $roleCollectionFactory;
+
+    /**
+     * @var \Magento\Store\Model\System\Store
+     */
+    protected $systemStore;
+
+    /**
      * @param Context $context
      * @param Data $backendHelper
      * @param CollectionFactory $collectionFactory
@@ -35,13 +61,18 @@ class CustomerGrid extends Extended
     public function __construct(
         Context $context,
         Data $backendHelper,
-        protected CollectionFactory $collectionFactory,
-        protected Registry $coreRegistry,
-        protected LinkCollectionFactory $linkCollectionFactory,
-        protected RoleCollectionFactory $roleCollectionFactory,
-        protected \Magento\Store\Model\System\Store $systemStore,
+        CollectionFactory $collectionFactory,
+        Registry $coreRegistry,
+        LinkCollectionFactory $linkCollectionFactory,
+        RoleCollectionFactory $roleCollectionFactory,
+        \Magento\Store\Model\System\Store $systemStore,
         array $data = []
     ) {
+        $this->collectionFactory = $collectionFactory;
+        $this->coreRegistry = $coreRegistry;
+        $this->linkCollectionFactory = $linkCollectionFactory;
+        $this->roleCollectionFactory = $roleCollectionFactory;
+        $this->systemStore = $systemStore;
         parent::__construct($context, $backendHelper, $data);
     }
 

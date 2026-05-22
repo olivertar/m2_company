@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -50,7 +51,7 @@ class Create implements HttpGetActionInterface
         $roleId = $this->companyManagement->getRoleIdByCustomerId($customerId);
 
         // Check if user is Company Admin
-        if ((int)$roleId !== \Orangecat\Company\Api\Data\RoleInterface::ADMIN_ROLE_ID) {
+        if ($roleId != 1) {
             $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
             return $resultRedirect->setPath('customer/account');
         }

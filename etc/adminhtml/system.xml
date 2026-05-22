@@ -35,11 +35,6 @@
                     <comment>Email template for company users created without password.</comment>
                     <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
                 </field>
-                <field id="company_status_change_template" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Company Status Change Template</label>
-                    <comment>Email template sent to the company when its approval status changes (e.g. Pending to Approved).</comment>
-                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
-                </field>
             </group>
             <group id="customers" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Customers</label>

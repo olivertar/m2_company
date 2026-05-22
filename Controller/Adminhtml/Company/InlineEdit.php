@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -8,44 +9,40 @@
  * file that was distributed with this source code.
  */
 
-declare(strict_types=1);
-
 namespace Orangecat\Company\Controller\Adminhtml\Company;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
-use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Framework\Data\Form\FormKey\Validator;
 use Orangecat\Company\Api\CompanyRepositoryInterface;
 
-class InlineEdit extends Action implements HttpPostActionInterface
+class InlineEdit extends Action
 {
-    public const ADMIN_RESOURCE = 'Orangecat_Company::company_save';
+    public const ADMIN_RESOURCE = 'Orangecat_Company::company';
 
     /**
-     * Fields allowed for inline editing.
-     *
-     * @var string[]
+     * @var JsonFactory
      */
-    private const ALLOWED_INLINE_FIELDS = [
-        'name',
-        'status',
-    ];
+    protected $jsonFactory;
+
+    /**
+     * @var CompanyRepositoryInterface
+     */
+    protected $companyRepository;
 
     /**
      * @param Context $context
      * @param JsonFactory $jsonFactory
      * @param CompanyRepositoryInterface $companyRepository
-     * @param Validator $formKeyValidator
      */
     public function __construct(
         Context $context,
-        protected JsonFactory $jsonFactory,
-        protected CompanyRepositoryInterface $companyRepository,
-        private Validator $formKeyValidator
+        JsonFactory $jsonFactory,
+        CompanyRepositoryInterface $companyRepository
     ) {
         parent::__construct($context);
+        $this->jsonFactory = $jsonFactory;
+        $this->companyRepository = $companyRepository;
     }
 
     /**
@@ -60,38 +57,25 @@ class InlineEdit extends Action implements HttpPostActionInterface
         $error = false;
         $messages = [];
 
-        if (!$this->getRequest()->isPost() || !$this->formKeyValidator->validate($this->getRequest())) {
-            $messages[] = __('Invalid request. Please refresh the page and try again.');
-            $error = true;
-            return $resultJson->setData([
-                'messages' => $messages,
-                'error' => $error
-            ]);
-        }
-
-        $postItems = $this->getRequest()->getParam('items', []);
-        if (!count($postItems)) {
-            $messages[] = __('Please correct the data sent.');
-            $error = true;
-        } else {
-            foreach (array_keys($postItems) as $entityId) {
-                try {
-                    /** @var \Orangecat\Company\Model\Company $company */
-                    $company = $this->companyRepository->get($entityId);
-                    $filteredData = array_intersect_key(
-                        $postItems[$entityId],
-                        array_flip(self::ALLOWED_INLINE_FIELDS)
-                    );
-                    if (!empty($filteredData)) {
-                        $company->addData($filteredData);
+        if ($this->getRequest()->getParam('isAjax')) {
+            $postItems = $this->getRequest()->getParam('items', []);
+            if (!count($postItems)) {
+                $messages[] = __('Please correct the data sent.');
+                $error = true;
+            } else {
+                foreach (array_keys($postItems) as $entityId) {
+                    try {
+                        /** @var \Orangecat\Company\Model\Company $company */
+                        $company = $this->companyRepository->get($entityId);
+                        $company->addData($postItems[$entityId]);
                         $this->companyRepository->save($company);
+                    } catch (\Exception $e) {
+                        $messages[] = $this->getErrorWithCompanyId(
+                            $company,
+                            __($e->getMessage())
+                        );
+                        $error = true;
                     }
-                } catch (\Exception $e) {
-                    $messages[] = $this->getErrorWithCompanyId(
-                        $company,
-                        __($e->getMessage())
-                    );
-                    $error = true;
                 }
             }
         }

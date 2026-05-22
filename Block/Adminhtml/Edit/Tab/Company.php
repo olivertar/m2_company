@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -23,17 +24,23 @@ use Magento\Ui\Component\Layout\Tabs\TabWrapper;
 class Company extends TabWrapper
 {
     /**
+     * @var Registry
+     */
+    protected $coreRegistry = null;
+
+    /**
      * @var bool
      */
     protected $isAjaxLoaded = true;
 
     /**
      * @param Context $context
-     * @param Registry $coreRegistry
+     * @param Registry $registry
      * @param array $data
      */
-    public function __construct(Context $context, private Registry $coreRegistry, array $data = [])
+    public function __construct(Context $context, Registry $registry, array $data = [])
     {
+        $this->coreRegistry = $registry;
         parent::__construct($context, $data);
     }
 

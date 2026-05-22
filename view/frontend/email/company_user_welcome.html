@@ -26,7 +26,8 @@
 <p class="greeting">{{trans "Hello %firstname %lastname," firstname=$customer_firstname lastname=$customer_lastname}}
 </p>
 <p>
-    {{trans "You have been added to the company account"}} <strong>{{var company_name}}</strong> {{trans "at %store_name." store_name=$store.frontend_name}}
+    {{trans "You have been added to the company account <strong>%company_name</strong> at %store_name."
+    company_name=$company_name store_name=$store.frontend_name |raw}}
 </p>
 <p>
     {{trans "To sign in and set your password, please click the link below:"}}

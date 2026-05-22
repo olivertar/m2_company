@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -8,30 +9,30 @@
  * file that was distributed with this source code.
  */
 
-declare(strict_types=1);
-
 namespace Orangecat\Company\Controller\Adminhtml\Company;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
-use Magento\Framework\App\Action\HttpPostActionInterface;
-use Magento\Framework\Data\Form\FormKey\Validator;
 use Orangecat\Company\Api\CompanyRepositoryInterface;
 
-class Delete extends Action implements HttpPostActionInterface
+class Delete extends Action
 {
     public const ADMIN_RESOURCE = 'Orangecat_Company::company_delete';
 
     /**
+     * @var CompanyRepositoryInterface
+     */
+    protected $companyRepository;
+
+    /**
      * @param Context $context
      * @param CompanyRepositoryInterface $companyRepository
-     * @param Validator $formKeyValidator
      */
     public function __construct(
         Context $context,
-        protected CompanyRepositoryInterface $companyRepository,
-        private Validator $formKeyValidator
+        CompanyRepositoryInterface $companyRepository
     ) {
+        $this->companyRepository = $companyRepository;
         parent::__construct($context);
     }
 
@@ -42,15 +43,8 @@ class Delete extends Action implements HttpPostActionInterface
      */
     public function execute()
     {
+        $id = $this->getRequest()->getParam('entity_id');
         $resultRedirect = $this->resultRedirectFactory->create();
-
-        if (!$this->getRequest()->isPost() || !$this->formKeyValidator->validate($this->getRequest())) {
-            $this->messageManager->addErrorMessage(__('Invalid request. Please try again.'));
-            return $resultRedirect->setPath('*/*/');
-        }
-
-        $id = (int)$this->getRequest()->getParam('entity_id');
-
         if ($id) {
             try {
                 $this->companyRepository->deleteById($id);
@@ -61,7 +55,6 @@ class Delete extends Action implements HttpPostActionInterface
                 return $resultRedirect->setPath('*/*/edit', ['id' => $id]);
             }
         }
-
         $this->messageManager->addErrorMessage(__('We can\'t find a company to delete.'));
         return $resultRedirect->setPath('*/*/');
     }

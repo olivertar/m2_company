@@ -15,7 +15,8 @@
 
 <p class="greeting">{{trans "Hello %company_name," company_name=$company.name}}</p>
 <p>
-    {{trans "The status of your company account has been updated to:"}} <strong>{{var status_label}}</strong>.
+    {{trans "The status of your company account has been updated to: <strong>%status_label</strong>."
+    status_label=$status_label |raw}}
 </p>
 <p>
     {{trans "If you have any questions, please contact us at %store_email." store_email=$store_email}}

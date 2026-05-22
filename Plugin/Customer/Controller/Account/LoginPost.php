@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -67,8 +68,9 @@ class LoginPost
 
                     if ($shouldBlock) {
                         $this->messageManager->addErrorMessage(
-                            __('The account sign-in was incorrect or your account is disabled temporarily. Please wait and try again later.')
+                            __('Your account is not enabled or your company has not yet been enabled.')
                         );
+                        $this->customerSession->setUsername($login['username']);
                         $resultRedirect = $this->resultRedirectFactory->create();
                         $resultRedirect->setPath('customer/account/login');
                         return $resultRedirect;

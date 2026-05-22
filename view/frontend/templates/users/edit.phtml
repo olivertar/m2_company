@@ -98,9 +98,7 @@ $isEdit = $user && $user->getId();
         </div>
 
         <div class="field max-purchase-amount buyer-limits-fields" style="display: none;">
-            <label class="label" for="max_purchase_amount">
-                <span><?= $escaper->escapeHtml(__('Max Amount per Purchase')) ?></span>
-            </label>
+            <label class="label" for="max_purchase_amount"><span><?= $escaper->escapeHtml(__('Max Amount per Purchase')) ?></span></label>
             <div class="control">
                 <input type="text"
                     id="max_purchase_amount"
@@ -111,9 +109,7 @@ $isEdit = $user && $user->getId();
             </div>
         </div>
         <div class="field max-period-amount buyer-limits-fields" style="display: none;">
-            <label class="label" for="max_period_amount">
-                <span><?= $escaper->escapeHtml(__('Max Amount per Period')) ?></span>
-            </label>
+            <label class="label" for="max_period_amount"><span><?= $escaper->escapeHtml(__('Max Amount per Period')) ?></span></label>
             <div class="control">
                 <input type="text"
                     id="max_period_amount"
@@ -137,7 +133,7 @@ $isEdit = $user && $user->getId();
                 <?php $deletePostData = $block->getDeletePostData(); ?>
                 <a class="action delete"
                     href="#"
-                    data-post="<?= $escaper->escapeHtmlAttr($deletePostData) ?>">
+                    data-post='<?= /* @noEscape */ $deletePostData ?>'>
                     <span><?= $escaper->escapeHtml(__('Delete User')) ?></span>
                 </a>
             <?php endif; ?>

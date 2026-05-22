@@ -13,5 +13,5 @@
     <template id="mycompany_email_email_template" label="New Company Registration Notification" file="new_company.html" type="html" module="Orangecat_Company" area="frontend"/>
     <template id="mycompany_email_company_no_password_template" label="New Company Customer - No Password" file="company_account_new_no_password.html" type="html" module="Orangecat_Company" area="frontend"/>
     <template id="company_user_welcome" label="Company User Welcome" file="company_user_welcome.html" type="html" module="Orangecat_Company" area="frontend"/>
-    <template id="mycompany_email_company_status_change_template" label="Company Status Change Notification" file="company_status_change.html" type="html" module="Orangecat_Company" area="frontend"/>
+    <template id="company_status_change" label="Company Status Change Notification" file="company_status_change.html" type="html" module="Orangecat_Company" area="frontend"/>
 </config>

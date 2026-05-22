@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Orangecat Company package.
  *
@@ -16,24 +17,32 @@ use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\RawFactory;
 use Magento\Framework\View\LayoutFactory;
-use Magento\Framework\Registry;
 
 class CompanyGrid extends Action
 {
-    public const ADMIN_RESOURCE = 'Orangecat_Company::company';
+    /**
+     * @var RawFactory
+     */
+    protected $resultRawFactory;
+
+    /**
+     * @var LayoutFactory
+     */
+    protected $layoutFactory;
+
     /**
      * @param Context $context
      * @param RawFactory $resultRawFactory
      * @param LayoutFactory $layoutFactory
-     * @param Registry $registry
      */
     public function __construct(
         Context $context,
-        protected RawFactory $resultRawFactory,
-        protected LayoutFactory $layoutFactory,
-        private Registry $registry
+        RawFactory $resultRawFactory,
+        LayoutFactory $layoutFactory
     ) {
         parent::__construct($context);
+        $this->resultRawFactory = $resultRawFactory;
+        $this->layoutFactory = $layoutFactory;
     }
 
     /**
@@ -45,7 +54,7 @@ class CompanyGrid extends Action
     {
         $id = $this->getRequest()->getParam('id');
         if ($id) {
-            $this->registry->register(
+            $this->_objectManager->get(\Magento\Framework\Registry::class)->register(
                 \Magento\Customer\Controller\RegistryConstants::CURRENT_CUSTOMER_ID,
                 $id
             );

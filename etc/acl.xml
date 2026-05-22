@@ -15,8 +15,6 @@
             <resource id="Magento_Backend::admin">
                 <resource id="Orangecat_Company::company_manage" title="Company Management" sortOrder="10">
                     <resource id="Orangecat_Company::company" title="Companies" sortOrder="10"/>
-                    <resource id="Orangecat_Company::company_save" title="Save Company" sortOrder="20"/>
-                    <resource id="Orangecat_Company::company_delete" title="Delete Company" sortOrder="30"/>
                 </resource>
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
