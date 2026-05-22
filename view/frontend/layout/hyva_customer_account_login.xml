@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <title>Customer Login</title>
+    </head>
+    <body>
+        <referenceBlock name="customer.new">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">
+                    Orangecat_Company::hyva/company_link.phtml
+                </argument>
+            </action>
+            <block class="Magento\Customer\Block\Form\Login\Info" name="customer.link.new" template="Orangecat_Company::hyva/customer_link.phtml" ifconfig="mycompany/customers/allow_frontend_customer_registration"/>
+        </referenceBlock>
+    </body>
+</page>

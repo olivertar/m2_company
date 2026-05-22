@@ -1,0 +1,30 @@
+<?php
+declare(strict_types=1);
+
+use Magento\Customer\Block\Form\Login\Info;
+use Magento\Framework\Escaper;
+
+/** @var Info $block */
+/** @var Escaper $escaper */
+?>
+
+    <div class="block-new-customer card">
+        <div class="block-title">
+            <h2 class="text-xl font-medium title-font mb-3" role="heading"
+                aria-level="2"><?= $escaper->escapeHtml(__('New Company')) ?></h2>
+        </div>
+        <div class="block-content" aria-labelledby="block-new-customer-heading">
+            <p>
+                <?= $escaper->escapeHtml( // phpcs:disable Generic.Files.LineLength.TooLong
+                    __('Creating a comapny account to access b2b purchases.')
+                ) // phpcs:enable ?>
+            </p>
+        </div>
+        <div class="actions-toolbar pt-6 pb-2">
+            <a href="<?= $block->escapeUrl($block->getUrl('company/create/account')) ?>"
+               class="btn btn-primary"><span><?= $escaper->escapeHtml(__('Create a Company Account')) ?></span></a>
+        </div>
+
+        <?= $block->getChildHtml('customer.link.new') ?>
+    </div>
+
