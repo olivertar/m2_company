@@ -251,7 +251,7 @@ class CompanyRepository implements CompanyRepositoryInterface
 
         $templateId = $this->config->getCompanyStatusChangeEmailTemplate();
         if (empty($templateId)) {
-            $templateId = 'company_status_change'; // Fallback to ID defined in email_templates.xml
+            $templateId = 'mycompany_email_company_status_change_template';
         }
 
         $sender = [
