@@ -6,6 +6,9 @@
     <type name="Magento\Customer\Block\Account\RegisterLink">
         <plugin name="mycompany_company_customer_register_link" type="Orangecat\Company\Plugin\Customer\Block\Account\RegisterLink" sortOrder="10"/>
     </type>
+    <type name="Orangecat\Company\Block\Account\CompanyRegisterLink">
+        <plugin name="mycompany_company_register_link_visibility" type="Orangecat\Company\Plugin\Customer\Block\Account\CompanyRegisterLinkVisibility" sortOrder="10"/>
+    </type>
     <type name="Hyva\Theme\ViewModel\CustomerRegistration">
         <plugin name="mycompany_company_hyva_customer_registration" type="Orangecat\Company\Plugin\Hyva\ViewModel\CustomerRegistration" sortOrder="10"/>
     </type>

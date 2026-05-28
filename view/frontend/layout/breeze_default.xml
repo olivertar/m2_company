@@ -11,6 +11,11 @@
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
+        <referenceBlock name="company-register-link">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Orangecat_Company::breeze/company-register-link.phtml</argument>
+            </action>
+        </referenceBlock>
         <move element="company-register-link" destination="top.links" after="register-link"/>
     </body>
 </page>
