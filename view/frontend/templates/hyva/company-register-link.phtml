@@ -1,0 +1,27 @@
+<?php
+/**
+ * This file is part of the Orangecat Company package.
+ *
+ * (c) Oliverio Gombert <olivertar@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+use Orangecat\Company\Block\Account\CompanyRegisterLink;
+use Magento\Framework\Escaper;
+
+/** @var CompanyRegisterLink $block */
+/** @var Escaper $escaper */
+
+$label = $block->getLabel() ?: __('Create a Company');
+?>
+<a id="<?= $escaper->escapeHtmlAttr($block->getNameInLayout()) ?>"
+   class="block px-4 py-2 lg:px-5 lg:py-2 hover:bg-gray-100"
+   href="<?= $escaper->escapeUrl($block->getHref()) ?>"
+   title="<?= $escaper->escapeHtmlAttr($label) ?>"
+>
+    <?= $escaper->escapeHtml($label) ?>
+</a>

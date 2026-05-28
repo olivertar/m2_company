@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * This file is part of the Orangecat Company package.
+ *
+ * (c) Oliverio Gombert <olivertar@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="header.customer.logged.out.links">
+            <block class="Orangecat\Company\Block\Account\CompanyRegisterLink"
+                   name="company.header.register.link"
+                   template="Orangecat_Company::hyva/company-register-link.phtml">
+                <arguments>
+                    <argument name="label" xsi:type="string" translate="true">Create a Company</argument>
+                    <argument name="sort_order" xsi:type="number">30</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+    </body>
+</page>
