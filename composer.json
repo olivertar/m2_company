@@ -1,15 +1,44 @@
 {
     "name": "orangecat/module-company",
-    "description": "Company management for B2B",
-    "require": {
-        "php": "~8.1.0||~8.2.0||~8.3.0",
-        "magento/framework": "*"
-    },
+    "description": "Company entity management for Magento 2 B2B — registration, approval workflow, roles, and user management",
     "type": "magento2-module",
-    "version": "1.0.0",
     "license": [
         "OSL-3.0"
     ],
+    "authors": [
+        {
+            "name": "Oliverio Gombert",
+            "email": "olivertar@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "keywords": [
+        "magento2",
+        "b2b",
+        "company",
+        "orangecat"
+    ],
+    "require": {
+        "php": ">=8.1",
+        "magento/framework": "*",
+        "magento/module-backend": "*",
+        "magento/module-cms": "*",
+        "magento/module-config": "*",
+        "magento/module-customer": "*",
+        "magento/module-directory": "*",
+        "magento/module-eav": "*",
+        "magento/module-email": "*",
+        "magento/module-store": "*",
+        "magento/module-theme": "*",
+        "magento/module-ui": "*",
+        "orangecat/core": "*"
+    },
+    "suggest": {
+        "orangecat/module-prices": "Customer-specific pricing per company",
+        "orangecat/module-company-credit": "Credit payment method per company",
+        "orangecat/module-company-payments-shipments": "Payment and shipping restrictions per company",
+        "orangecat/module-purchase-order": "Purchase order approval workflow"
+    },
     "autoload": {
         "files": [
             "registration.php"
