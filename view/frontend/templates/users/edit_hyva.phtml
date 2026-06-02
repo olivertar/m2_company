@@ -1,0 +1,147 @@
+<?php
+/**
+ * This file is part of the Orangecat Company package.
+ *
+ * (c) Oliverio Gombert <olivertar@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/** @var \Orangecat\Company\Block\Users\Edit $block */
+$user         = $block->getUser();
+$userLink     = $block->getUserLink();
+$isEdit       = $user && $user->getId();
+$buyerRoleId  = (int)$block->getCompanyBuyerRoleId();
+$initialRole  = ($isEdit && $userLink) ? (int)$userLink->getRoleId() : 0;
+?>
+<div x-data="{ role: <?= $initialRole ?>, buyerRoleId: <?= $buyerRoleId ?> }">
+    <form action="<?= $escaper->escapeUrl($block->getSaveUrl()) ?>"
+          method="post"
+          id="form-company-user"
+          autocomplete="off">
+        <?= $block->getBlockHtml('formkey') ?>
+
+        <?php if ($isEdit): ?>
+            <input type="hidden" name="link_id" value="<?= $escaper->escapeHtmlAttr($userLink->getId()) ?>"/>
+        <?php endif; ?>
+
+        <h2 class="text-xl font-semibold mb-6">
+            <?= $escaper->escapeHtml($isEdit ? __('Edit User') : __('Add New User')) ?>
+        </h2>
+
+        <div class="mb-4">
+            <label class="label block mb-1" for="firstname">
+                <?= $escaper->escapeHtml(__('First Name')) ?> <span class="text-red-500">*</span>
+            </label>
+            <input type="text"
+                   id="firstname"
+                   name="firstname"
+                   value="<?= $isEdit ? $escaper->escapeHtmlAttr($user->getFirstname()) : '' ?>"
+                   class="form-input w-full max-w-md"
+                   required>
+        </div>
+
+        <div class="mb-4">
+            <label class="label block mb-1" for="lastname">
+                <?= $escaper->escapeHtml(__('Last Name')) ?> <span class="text-red-500">*</span>
+            </label>
+            <input type="text"
+                   id="lastname"
+                   name="lastname"
+                   value="<?= $isEdit ? $escaper->escapeHtmlAttr($user->getLastname()) : '' ?>"
+                   class="form-input w-full max-w-md"
+                   required>
+        </div>
+
+        <div class="mb-4">
+            <label class="label block mb-1" for="email">
+                <?= $escaper->escapeHtml(__('Email')) ?> <span class="text-red-500">*</span>
+            </label>
+            <input type="email"
+                   id="email"
+                   name="email"
+                   value="<?= $isEdit ? $escaper->escapeHtmlAttr($user->getEmail()) : '' ?>"
+                   class="form-input w-full max-w-md"
+                   required
+                   <?= $isEdit ? 'readonly' : '' ?>>
+        </div>
+
+        <div class="mb-4">
+            <label class="label block mb-1" for="role_id">
+                <?= $escaper->escapeHtml(__('Role')) ?>
+            </label>
+            <select id="role_id"
+                    name="role_id"
+                    class="form-select w-full max-w-md"
+                    x-model.number="role">
+                <?php foreach ($block->getRoles() as $role): ?>
+                    <option value="<?= $escaper->escapeHtmlAttr($role->getId()) ?>">
+                        <?= $escaper->escapeHtml($role->getRoleName()) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="label block mb-1" for="status">
+                <?= $escaper->escapeHtml(__('Status')) ?>
+            </label>
+            <select id="status"
+                    name="status"
+                    class="form-select w-full max-w-md">
+                <option value="1" <?= ($block->getUserStatus() == 1) ? 'selected' : '' ?>>
+                    <?= $escaper->escapeHtml(__('Enabled')) ?>
+                </option>
+                <option value="0" <?= ($block->getUserStatus() == 0) ? 'selected' : '' ?>>
+                    <?= $escaper->escapeHtml(__('Disabled')) ?>
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-4" x-show="role == buyerRoleId" x-cloak>
+            <label class="label block mb-1" for="max_purchase_amount">
+                <?= $escaper->escapeHtml(__('Max Amount per Purchase')) ?>
+            </label>
+            <input type="text"
+                   id="max_purchase_amount"
+                   name="max_purchase_amount"
+                   value="<?= ($isEdit && $userLink) ? $escaper->escapeHtmlAttr($userLink->getMaxPurchaseAmount()) : '' ?>"
+                   class="form-input w-full max-w-md">
+        </div>
+
+        <div class="mb-6" x-show="role == buyerRoleId" x-cloak>
+            <label class="label block mb-1" for="max_period_amount">
+                <?= $escaper->escapeHtml(__('Max Amount per Period')) ?>
+            </label>
+            <input type="text"
+                   id="max_period_amount"
+                   name="max_period_amount"
+                   value="<?= ($isEdit && $userLink) ? $escaper->escapeHtmlAttr($userLink->getMaxPeriodAmount()) : '' ?>"
+                   class="form-input w-full max-w-md">
+        </div>
+
+        <div class="flex flex-wrap gap-3 pt-5 border-t">
+            <button type="submit" class="btn btn-primary">
+                <?= $escaper->escapeHtml(__('Save User')) ?>
+            </button>
+            <a href="<?= $escaper->escapeUrl($block->getBackUrl()) ?>" class="btn btn-secondary">
+                <?= $escaper->escapeHtml(__('Back')) ?>
+            </a>
+        </div>
+    </form>
+
+    <?php if ($isEdit): ?>
+        <div class="mt-4">
+            <form method="post"
+                  action="<?= $escaper->escapeUrl($block->getDeleteUrl()) ?>"
+                  x-data
+                  @submit.prevent="confirm('<?= $escaper->escapeJs(__('Are you sure you want to delete this user?')) ?>') && $el.submit()">
+                <?= $block->getBlockHtml('formkey') ?>
+                <button type="submit" class="btn btn-secondary text-red-600 hover:text-red-700">
+                    <?= $escaper->escapeHtml(__('Delete User')) ?>
+                </button>
+            </form>
+        </div>
+    <?php endif; ?>
+</div>

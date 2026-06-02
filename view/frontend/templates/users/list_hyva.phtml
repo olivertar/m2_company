@@ -1,0 +1,95 @@
+<?php
+/**
+ * This file is part of the Orangecat Company package.
+ *
+ * (c) Oliverio Gombert <olivertar@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/** @var \Orangecat\Company\Block\Users\ListUsers $block */
+$users = $block->getUsers();
+?>
+<div class="block block-company-users">
+    <div class="mb-4">
+        <a href="<?= $escaper->escapeUrl($block->getCreateUrl()) ?>" class="btn btn-primary">
+            <?= $escaper->escapeHtml(__('Add New User')) ?>
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-sm">
+            <thead>
+                <tr>
+                    <th class="text-left px-3 py-3 bg-gray-100 border-b-2 border-gray-300 font-semibold text-xs uppercase tracking-wider text-gray-500 whitespace-nowrap"><?= $escaper->escapeHtml(__('Name')) ?></th>
+                    <th class="text-left px-3 py-3 bg-gray-100 border-b-2 border-gray-300 font-semibold text-xs uppercase tracking-wider text-gray-500 whitespace-nowrap"><?= $escaper->escapeHtml(__('Email')) ?></th>
+                    <th class="text-left px-3 py-3 bg-gray-100 border-b-2 border-gray-300 font-semibold text-xs uppercase tracking-wider text-gray-500 whitespace-nowrap"><?= $escaper->escapeHtml(__('Role')) ?></th>
+                    <th class="text-left px-3 py-3 bg-gray-100 border-b-2 border-gray-300 font-semibold text-xs uppercase tracking-wider text-gray-500 whitespace-nowrap"><?= $escaper->escapeHtml(__('Status')) ?></th>
+                    <th class="text-left px-3 py-3 bg-gray-100 border-b-2 border-gray-300 font-semibold text-xs uppercase tracking-wider text-gray-500 whitespace-nowrap"><?= $escaper->escapeHtml(__('Actions')) ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($users && $users->getSize()): ?>
+                    <?php foreach ($users as $user): ?>
+                        <?php
+                        $isActive    = (int)$user->getData('approve_account');
+                        $statusLabel = $isActive === 1 ? __('Disable') : __('Enable');
+                        $isSelf      = $user->getData('customer_id') == $block->getCurrentCustomerId();
+                        ?>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="p-3 align-middle text-gray-900">
+                                <?= $escaper->escapeHtml($user->getData('firstname') . ' ' . $user->getData('lastname')) ?>
+                            </td>
+                            <td class="p-3 align-middle text-gray-900">
+                                <?= $escaper->escapeHtml($user->getData('email')) ?>
+                            </td>
+                            <td class="p-3 align-middle text-gray-900">
+                                <?= $escaper->escapeHtml($user->getData('role_name')) ?>
+                            </td>
+                            <td class="p-3 align-middle text-gray-900">
+                                <?= $isActive === 1
+                                    ? $escaper->escapeHtml(__('Active'))
+                                    : $escaper->escapeHtml(__('Inactive')) ?>
+                            </td>
+                            <td class="p-3 align-middle text-gray-900">
+                                <?php if (!$isSelf): ?>
+                                    <div class="flex gap-2 flex-wrap">
+                                        <a href="<?= $escaper->escapeUrl($block->getEditUrl($user->getId())) ?>"
+                                           class="btn btn-secondary btn-size-sm">
+                                            <?= $escaper->escapeHtml(__('Edit')) ?>
+                                        </a>
+                                        <form method="post"
+                                              action="<?= $escaper->escapeUrl($block->getStatusUrl($user->getId())) ?>"
+                                              x-data
+                                              @submit.prevent="confirm('<?= $escaper->escapeJs(__('Change status for this user?')) ?>') && $el.submit()">
+                                            <?= $block->getBlockHtml('formkey') ?>
+                                            <button type="submit" class="btn btn-secondary btn-size-sm">
+                                                <?= $escaper->escapeHtml($statusLabel) ?>
+                                            </button>
+                                        </form>
+                                        <form method="post"
+                                              action="<?= $escaper->escapeUrl($block->getDeleteUrl($user->getId())) ?>"
+                                              x-data
+                                              @submit.prevent="confirm('<?= $escaper->escapeJs(__('Are you sure you want to delete this user?')) ?>') && $el.submit()">
+                                            <?= $block->getBlockHtml('formkey') ?>
+                                            <button type="submit" class="btn btn-secondary btn-size-sm text-red-600 hover:text-red-700">
+                                                <?= $escaper->escapeHtml(__('Delete')) ?>
+                                            </button>
+                                        </form>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="5" class="p-6 text-center text-gray-500">
+                            <?= $escaper->escapeHtml(__('No users found for this company.')) ?>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,9 @@
+/* Tailwind utilities not present in compiled styles.css */
+.border-collapse   { border-collapse: collapse }
+.align-middle      { vertical-align: middle }
+.tracking-wider    { letter-spacing: 0.05em }
+.whitespace-nowrap { white-space: nowrap }
+.gap-2             { gap: 0.5rem }
+.gap-3             { gap: 0.75rem }
+.max-w-md          { max-width: 28rem }
+.flex-wrap         { flex-wrap: wrap }
