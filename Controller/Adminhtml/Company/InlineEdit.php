@@ -63,11 +63,12 @@ class InlineEdit extends Action
                 $messages[] = __('Please correct the data sent.');
                 $error = true;
             } else {
+                $allowedFields = ['name', 'email', 'tax_id', 'status'];
                 foreach (array_keys($postItems) as $entityId) {
                     try {
                         /** @var \Orangecat\Company\Model\Company $company */
                         $company = $this->companyRepository->get($entityId);
-                        $company->addData($postItems[$entityId]);
+                        $company->addData(array_intersect_key($postItems[$entityId], array_flip($allowedFields)));
                         $this->companyRepository->save($company);
                     } catch (\Exception $e) {
                         $messages[] = $this->getErrorWithCompanyId(

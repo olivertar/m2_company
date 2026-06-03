@@ -20,6 +20,8 @@ use Magento\Framework\View\LayoutFactory;
 
 class CustomerGrid extends Action
 {
+    public const ADMIN_RESOURCE = 'Orangecat_Company::company';
+
     /**
      * @var RawFactory
      */

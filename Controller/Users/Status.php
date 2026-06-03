@@ -17,6 +17,7 @@ use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Data\Form\FormKey\Validator as FormKeyValidator;
 
 class Status implements \Magento\Framework\App\Action\HttpPostActionInterface
 {
@@ -28,6 +29,7 @@ class Status implements \Magento\Framework\App\Action\HttpPostActionInterface
      * @param ManagerInterface $messageManager
      * @param \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $collectionFactory
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
+     * @param FormKeyValidator $formKeyValidator
      */
     public function __construct(
         private Session $customerSession,
@@ -36,7 +38,8 @@ class Status implements \Magento\Framework\App\Action\HttpPostActionInterface
         private RequestInterface $request,
         private ManagerInterface $messageManager,
         private \Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory $collectionFactory,
-        private \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
+        private \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
+        private FormKeyValidator $formKeyValidator
     ) {
     }
 
@@ -51,6 +54,11 @@ class Status implements \Magento\Framework\App\Action\HttpPostActionInterface
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
 
         if (!$this->request->isPost()) {
+            return $resultRedirect->setPath('*/*/index');
+        }
+
+        if (!$this->formKeyValidator->validate($this->request)) {
+            $this->messageManager->addErrorMessage(__('Invalid form key. Please try again.'));
             return $resultRedirect->setPath('*/*/index');
         }
 

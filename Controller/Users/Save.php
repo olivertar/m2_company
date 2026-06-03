@@ -25,6 +25,7 @@ use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\Translate\Inline\StateInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Data\Form\FormKey\Validator as FormKeyValidator;
 
 class Save implements HttpPostActionInterface
 {
@@ -46,6 +47,7 @@ class Save implements HttpPostActionInterface
      * @param \Magento\Framework\UrlInterface $urlBuilder
      * @param \Magento\Customer\Model\CustomerFactory $customerModelFactory
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
+     * @param FormKeyValidator $formKeyValidator
      */
     public function __construct(
         private Session $customerSession,
@@ -64,7 +66,8 @@ class Save implements HttpPostActionInterface
         private ScopeConfigInterface $scopeConfig,
         private \Magento\Framework\UrlInterface $urlBuilder,
         private \Magento\Customer\Model\CustomerFactory $customerModelFactory,
-        private \Magento\Framework\Encryption\EncryptorInterface $encryptor
+        private \Magento\Framework\Encryption\EncryptorInterface $encryptor,
+        private FormKeyValidator $formKeyValidator
     ) {
     }
 
@@ -77,6 +80,11 @@ class Save implements HttpPostActionInterface
     {
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
         /** @var \Magento\Framework\Controller\Result\Redirect $resultRedirect */
+
+        if (!$this->formKeyValidator->validate($this->request)) {
+            $this->messageManager->addErrorMessage(__('Invalid form key. Please try again.'));
+            return $resultRedirect->setPath('*/*/index');
+        }
 
         if (!$this->customerSession->isLoggedIn()) {
             return $resultRedirect->setPath('customer/account/login');
@@ -239,7 +247,7 @@ class Save implements HttpPostActionInterface
                     'customer' => $customer,
                     'customer_firstname' => $customer->getFirstname(),
                     'customer_lastname' => $customer->getLastname(),
-                    'company_name' => $company->getName(),
+                    'company_name' => htmlspecialchars((string)$company->getName(), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
                     'store' => $this->storeManager->getStore(),
                     'id' => $customer->getId(),
                     'token' => $newPasswordToken,
