@@ -19,6 +19,7 @@ use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Orangecat\Company\Model\CompanyCustomer;
+use Orangecat\Company\Api\Data\RoleInterface;
 
 use Magento\Framework\Registry;
 
@@ -153,7 +154,7 @@ class CompanyManagement implements CompanyManagementInterface
         $roleId = $this->getRoleIdByCustomerId($customerId);
         $companyId = $this->getCompanyIdByCustomerId($customerId);
 
-        return $roleId == 1 && $companyId;
+        return $roleId == RoleInterface::ADMIN_ROLE_ID && $companyId;
     }
 
     /**

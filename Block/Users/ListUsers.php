@@ -92,7 +92,7 @@ class ListUsers extends Template
                 // Join customer_entity_int (assuming approve_account is int)
                 $this->userCollection->getSelect()->joinLeft(
                     ['cust_attr' => $this->userCollection->getTable('customer_entity_int')],
-                    'main_table.customer_id = cust_attr.entity_id AND cust_attr.attribute_id = ' . $attributeId,
+                    'main_table.customer_id = cust_attr.entity_id AND cust_attr.attribute_id = ' . (int)$attributeId,
                     ['approve_account' => 'cust_attr.value']
                 );
 

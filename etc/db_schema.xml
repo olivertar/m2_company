@@ -22,6 +22,12 @@
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
         </constraint>
+        <constraint xsi:type="unique" referenceId="MYCOMPANY_COMPANY_EMAIL">
+            <column name="email"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="MYCOMPANY_COMPANY_TAX_ID">
+            <column name="tax_id"/>
+        </constraint>
         <constraint xsi:type="foreign" referenceId="MYCOMPANY_WEBSITE_ID_STORE_WEBSITE_WEBSITE_ID" table="mycompany" column="website_id" referenceTable="store_website" referenceColumn="website_id" onDelete="CASCADE"/>
     </table>
 

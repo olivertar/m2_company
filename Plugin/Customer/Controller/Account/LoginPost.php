@@ -41,7 +41,8 @@ class LoginPost
     }
 
     /**
-     * Restrict login for unapproved customers and companies
+     * Restrict login for unapproved customers and companies.
+     * Approval check runs AFTER standard auth to avoid user enumeration via error messages.
      *
      * @param LoginPostAction $subject
      * @param \Closure $proceed
@@ -49,39 +50,36 @@ class LoginPost
      */
     public function aroundExecute(LoginPostAction $subject, \Closure $proceed)
     {
-        if ($subject->getRequest()->isPost()) {
-            $login = $subject->getRequest()->getPost('login');
-            if (!empty($login['username']) && !empty($login['password'])) {
-                try {
-                    $customer = $this->customerRepository->get($login['username']);
-                    $attribute = $customer->getCustomAttribute('approve_account');
-                    $isApproved = $attribute ? (bool)$attribute->getValue() : false;
+        $result = $proceed();
 
-                    $shouldBlock = false;
-                    // If attribute exists and is false -> Block (Explicitly disapproved)
-                    if ($attribute !== null && !$isApproved) {
-                        $shouldBlock = true;
-                    } elseif ($attribute === null && $this->config->isCustomerApprovalRequired()) {
-                        // If attribute missing AND approval required -> Block (New/Unapproved)
-                        $shouldBlock = true;
-                    }
+        if ($this->customerSession->isLoggedIn()) {
+            try {
+                $customer = $this->customerRepository->getById((int)$this->customerSession->getCustomerId());
+                $attribute = $customer->getCustomAttribute('approve_account');
+                $isApproved = $attribute ? (bool)$attribute->getValue() : false;
 
-                    if ($shouldBlock) {
-                        $this->messageManager->addErrorMessage(
-                            __('Your account is not enabled or your company has not yet been enabled.')
-                        );
-                        $this->customerSession->setUsername($login['username']);
-                        $resultRedirect = $this->resultRedirectFactory->create();
-                        $resultRedirect->setPath('customer/account/login');
-                        return $resultRedirect;
-                    }
-                } catch (\Exception $e) {
-                    $this->logger->error('Error in LoginPost plugin: ' . $e->getMessage(), ['exception' => $e]);
-                    // Proceed to standard login flow which handles invalid credentials (or missing user) appropriately
+                $shouldBlock = false;
+                if ($attribute !== null && !$isApproved) {
+                    $shouldBlock = true;
+                } elseif ($attribute === null && $this->config->isCustomerApprovalRequired()) {
+                    $shouldBlock = true;
                 }
+
+                if ($shouldBlock) {
+                    $this->customerSession->logout();
+                    $this->messageManager->getMessages(true);
+                    $this->messageManager->addErrorMessage(
+                        __('Your account is not enabled or your company has not yet been enabled.')
+                    );
+                    $resultRedirect = $this->resultRedirectFactory->create();
+                    $resultRedirect->setPath('customer/account/login');
+                    return $resultRedirect;
+                }
+            } catch (\Exception $e) {
+                $this->logger->error('Error in LoginPost plugin: ' . $e->getMessage(), ['exception' => $e]);
             }
         }
 
-        return $proceed();
+        return $result;
     }
 }

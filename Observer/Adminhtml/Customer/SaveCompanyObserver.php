@@ -151,11 +151,10 @@ class SaveCompanyObserver implements ObserverInterface
         $role = $collection->getFirstItem();
 
         if ($role->getId()) {
-            return $role->getId();
+            return (int)$role->getId();
         }
 
-        // Fallback
-        return 1;
+        return 0;
     }
 
     /**
