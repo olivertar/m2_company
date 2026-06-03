@@ -16,6 +16,7 @@ namespace Orangecat\Company\Plugin\Customer\Api;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\App\Request\Http;
+use Magento\Framework\AuthorizationInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Orangecat\Company\Api\CompanyManagementInterface;
 use Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory;
@@ -29,12 +30,14 @@ class CustomerRepositoryInterfaceSavePlugin
      * @param CompanyManagementInterface $companyManagement
      * @param CollectionFactory $companyCustomerCollectionFactory
      * @param \Orangecat\Company\Model\Config $companyConfig
+     * @param AuthorizationInterface $authorization
      */
     public function __construct(
         private Http $request,
         private CompanyManagementInterface $companyManagement,
         private CollectionFactory $companyCustomerCollectionFactory,
-        private \Orangecat\Company\Model\Config $companyConfig
+        private \Orangecat\Company\Model\Config $companyConfig,
+        private AuthorizationInterface $authorization
     ) {
     }
 
@@ -88,6 +91,12 @@ class CustomerRepositoryInterfaceSavePlugin
         if ($companyAttributes) {
             $companyId = (int)$companyAttributes->getCompanyId();
             $roleId = (int)$companyAttributes->getRoleId();
+
+            if ($companyId && !$this->authorization->isAllowed('Orangecat_Company::company')) {
+                throw new LocalizedException(
+                    __('You do not have permission to manage company assignments.')
+                );
+            }
         } else {
             // Priority 2: Admin Panel (Post Data)
             $data = $this->request->getPostValue('customer');
