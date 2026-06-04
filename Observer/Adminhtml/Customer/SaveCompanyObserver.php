@@ -18,6 +18,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Orangecat\Company\Model\CompanyCustomerFactory;
+use Orangecat\Company\Model\ResourceModel\CompanyCustomer as CompanyCustomerResource;
 use Orangecat\Company\Model\ResourceModel\CompanyCustomer\CollectionFactory;
 use Orangecat\Company\Model\ResourceModel\Role\CollectionFactory as RoleCollectionFactory;
 use Orangecat\Company\Model\CompanyCustomer;
@@ -29,12 +30,14 @@ class SaveCompanyObserver implements ObserverInterface
      * @param CompanyCustomerFactory $companyCustomerFactory
      * @param CollectionFactory $collectionFactory
      * @param RoleCollectionFactory $roleCollectionFactory
+     * @param CompanyCustomerResource $companyCustomerResource
      */
     public function __construct(
         private RequestInterface $request,
         private CompanyCustomerFactory $companyCustomerFactory,
         private CollectionFactory $collectionFactory,
-        private RoleCollectionFactory $roleCollectionFactory
+        private RoleCollectionFactory $roleCollectionFactory,
+        private CompanyCustomerResource $companyCustomerResource
     ) {
     }
 
@@ -57,8 +60,9 @@ class SaveCompanyObserver implements ObserverInterface
             return;
         }
 
-        $companyId = $customerData['company_id'];
-        $roleId = $customerData['role_id'] ?? null;
+        // M2: explicit int cast and validation before use in filters
+        $companyId = (int)($customerData['company_id'] ?? 0);
+        $roleId = !empty($customerData['role_id']) ? (int)$customerData['role_id'] : null;
 
         // Check for existing link
         $collection = $this->collectionFactory->create();
@@ -66,6 +70,8 @@ class SaveCompanyObserver implements ObserverInterface
 
         /** @var CompanyCustomer $link */
         $link = $collection->getFirstItem();
+
+        $connection = $this->companyCustomerResource->getConnection();
 
         if ($companyId) {
             if (!$roleId) {
@@ -112,10 +118,18 @@ class SaveCompanyObserver implements ObserverInterface
                 $link->setCustomerId($customerId);
             }
 
-            $link->setCompanyId((int)$companyId);
-            // Role might be optional? Table implies not null. Assume default or required.
-            $link->setRoleId((int)$roleId);
-            $link->save();
+            $link->setCompanyId($companyId);
+            $link->setRoleId($roleId);
+
+            // M1: wrap write in transaction
+            $connection->beginTransaction();
+            try {
+                $link->save();
+                $connection->commit();
+            } catch (\Exception $e) {
+                $connection->rollBack();
+                throw $e;
+            }
         } else {
             // Delete if exists and company_id is cleared
             if ($link->getId()) {
@@ -131,7 +145,16 @@ class SaveCompanyObserver implements ObserverInterface
                         );
                     }
                 }
-                $link->delete();
+
+                // M1: wrap write in transaction
+                $connection->beginTransaction();
+                try {
+                    $link->delete();
+                    $connection->commit();
+                } catch (\Exception $e) {
+                    $connection->rollBack();
+                    throw $e;
+                }
             }
         }
     }

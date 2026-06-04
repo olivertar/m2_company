@@ -105,11 +105,23 @@ class Save implements HttpPostActionInterface
 
         try {
             $linkId = isset($data['link_id']) ? (int)$data['link_id'] : null;
-            $email = $data['email'];
-            $firstname = $data['firstname'];
-            $lastname = $data['lastname'];
-            $roleId = (int)$data['role_id'];
+            $email = $data['email'] ?? '';
+            $firstname = $data['firstname'] ?? '';
+            $lastname = $data['lastname'] ?? '';
+            $roleId = (int)($data['role_id'] ?? 0);
             $status = isset($data['status']) ? (int)$data['status'] : 1;
+
+            // M3: validate email format before any repository lookup
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $this->messageManager->addErrorMessage(__('Please enter a valid email address.'));
+                return $resultRedirect->setPath('*/*/create');
+            }
+
+            // M4: status must be 0 or 1
+            if (!in_array($status, [0, 1], true)) {
+                $this->messageManager->addErrorMessage(__('Invalid status value.'));
+                return $resultRedirect->setPath('*/*/create');
+            }
 
             // Role 1 check
             if ($roleId == 1) {
