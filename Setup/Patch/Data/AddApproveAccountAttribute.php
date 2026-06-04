@@ -44,7 +44,7 @@ class AddApproveAccountAttribute implements DataPatchInterface
             'source' => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
             'required' => false,
             'visible' => true,
-            'default' => false,
+            'default' => 0,
             'user_defined' => true,
             'position' => 9998,
             'system' => 0,

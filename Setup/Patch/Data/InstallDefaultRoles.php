@@ -61,13 +61,18 @@ class InstallDefaultRoles implements DataPatchInterface
             ['role_name' => 'Company Buyer', 'permissions' => json_encode(['place_order'])],
         ];
 
+        $connection = $this->moduleDataSetup->getConnection();
+        $table = $this->moduleDataSetup->getTable('mycompany_role');
+
         foreach ($defaultRoles as $roleData) {
-            $role = $this->roleFactory->create();
-            // Check if role exists to avoid duplicates if patch runs again
-            // (though patch checks aliases usually, but good practice)
-            // Actually implementation of patch system prevents duplicate runs, so we are safe to just insert.
-            $role->setData($roleData);
-            $this->roleResource->save($role);
+            $exists = (int)$connection->fetchOne(
+                $connection->select()->from($table, ['COUNT(*)'])->where('role_name = ?', $roleData['role_name'])
+            );
+            if (!$exists) {
+                $role = $this->roleFactory->create();
+                $role->setData($roleData);
+                $this->roleResource->save($role);
+            }
         }
 
         $this->moduleDataSetup->endSetup();
