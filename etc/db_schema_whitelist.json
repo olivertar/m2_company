@@ -21,7 +21,9 @@
             "PRIMARY": true,
             "MYCOMPANY_WEBSITE_ID_STORE_WEBSITE_WEBSITE_ID": true,
             "MYCOMPANY_COMPANY_EMAIL": true,
-            "MYCOMPANY_COMPANY_TAX_ID": true
+            "MYCOMPANY_COMPANY_TAX_ID": true,
+            "MYCOMPANY_EMAIL": true,
+            "MYCOMPANY_TAX_ID": true
         }
     },
     "mycompany_role": {
