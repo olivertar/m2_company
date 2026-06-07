@@ -1,6 +1,6 @@
 {
     "name": "orangecat/module-company",
-    "description": "Company entity management for Magento 2 B2B — registration, approval workflow, roles, and user management",
+    "description": "Company entity management for Magento 2 B2B \u2014 registration, approval workflow, roles, and user management",
     "type": "magento2-module",
     "license": [
         "OSL-3.0"
@@ -21,16 +21,6 @@
     "require": {
         "php": ">=8.1",
         "magento/framework": ">=103.0",
-        "magento/module-backend": ">=103.0",
-        "magento/module-cms": ">=103.0",
-        "magento/module-config": ">=103.0",
-        "magento/module-customer": ">=103.0",
-        "magento/module-directory": ">=103.0",
-        "magento/module-eav": ">=103.0",
-        "magento/module-email": ">=103.0",
-        "magento/module-store": ">=103.0",
-        "magento/module-theme": ">=103.0",
-        "magento/module-ui": ">=103.0",
         "orangecat/core": "*"
     },
     "suggest": {
